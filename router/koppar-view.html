@@ -8,9 +8,6 @@
       }
     </style>
     <content></content>
-    <div id="insertion">
-
-    </div>
   </template>
   <script>
     Polymer({
@@ -36,21 +33,33 @@
         this.update();
       },
       _currentlyShown: null,
+
+      _clean: function() {
+        Array.from(this.children).forEach(function(child) {
+          if(child && child.classList && child.classList.contains && child.classList.contains("koppar__view__inserted")) {
+            child.remove();
+          }
+        });
+      },
       update: function() {
         if(this.show) {
           if(!this._currentlyShown) {
             var template = Polymer.dom(this).querySelector('template');
             this.templatize(template);
 
-            this.$.insertion.innerHTML = "";
+            this._clean();
             var node = this.stamp({data: this.data});
-            Polymer.dom(this.$.insertion).appendChild(node.root);
+        
+            Array.from(node.root.children).forEach(function(child) {
+              child.classList.add("koppar__view__inserted");
+            });
+            this.appendChild(node.root);
             this._currentlyShown = node;
           } else {
             this._currentlyShown.data = this.data;
           }
         } else if(!this.show) {
-          this.$.insertion.innerHTML = "";
+          this._clean();
           this._currentlyShown = null;
         }
         this.__lastShow = this.show;
