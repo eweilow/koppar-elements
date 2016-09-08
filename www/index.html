@@ -19,9 +19,24 @@
         overflow-x: hidden;
       }
 
-      /deep/ .nav {
+      .nav {
         padding: 16px;
         line-height: 16px;
+        box-sizing: border-box;
+      }
+
+      body > app-router {
+        margin-left: 300px;
+        box-sizing: border-box;
+        display: block;
+        overflow: hidden;
+      }
+
+      .side {
+        position: fixed;
+        top: 0; left: 0; width: 300px;
+        bottom: 0;
+        background: white;
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -34,42 +49,57 @@
     <link rel="prefetch" href="/components/routematcher.js">
   </head>
   <body>
-    <app-router route="/" transition="fade">
-      <div class="nav">
+    <app-router route="/" transition="fade" greedy> <!-- greedy makes this router only use one view -->
+      <div class="nav side">
         <a href="/">home</a>
-        <a href="/a">a</a>
+        <a href="/a/test">a</a>
         <a href="/b">b</a>
         <a href="/c">c</a>
       </div>
-      <app-view route="/">
+      <app-view route="/" order="1">
         <template>
           <h1>home</h1>
         </template>
       </app-view>
-      <app-view route="/a" lazy> <!-- lazy matches EVERYTHING after -->
+      <app-view route="/a" lazy order="2"> <!-- lazy matches EVERYTHING after -->
         <template>
-          <h1>a</h1>
           <div class="nav">
-            <a href="/a/">home</a>
-            <a href="/a/a">a</a>
-            <a href="/a/b">b</a>
-            <a href="/a/c">c</a>
+            <h1>a</h1>
+            <a href="/a/test/">home</a>
+            <a href="/a/test/a">a</a>
+            <a href="/a/test/b">b</a>
+            <a href="/a/test/c">c</a>
           </div>
-          <app-router route="/a" transition="fade">
-            <app-view route="/:id">
+          <app-router route="/a/:id" transition="slide" greedy>
+            <app-view route="/" order="1">
               <template>
-                <h1>{{data}}</h1>
+                <h1>home {{data.id}}</h1>
+              </template>
+            </app-view>
+            <app-view route="/a" order="2">
+              <template>
+                <h1>a {{data.id}}</h1>
+              </template>
+            </app-view>
+            <app-view route="/b" order="3">
+              <template>
+                <h1>b {{data.id}}</h1>
+              </template>
+            </app-view>
+            <app-view route="/c" order="4">
+              <template>
+                <h1>c {{data.id}}</h1>
               </template>
             </app-view>
           </app-router>
         </template>
       </app-view>
-      <app-view route="/b">
+      <app-view route="/b" order="3">
         <template>
           <h1>b</h1>
         </template>
       </app-view>
-      <app-view route="/c">
+      <app-view route="/c" order="4">
         <template>
           <h1>c</h1>
         </template>

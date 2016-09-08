@@ -1,0 +1,256 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-location/iron-location.html">
+<script async src="../routematcher.js"></script>
+
+<dom-module id="app-router">
+  <template>
+    <style>
+      
+      #transformer.transition {
+        transition: transform 225ms, opacity 225ms;
+      }
+
+      #transformer.transition.out {
+        transition-timing-function: cubic-bezier(.42,0,1,1);
+      }
+
+      #transformer.transition.in {
+        transition-timing-function: cubic-bezier(0,0,.58,1);
+      }
+
+      #transformer.slide {
+        will-change: transform, opacity;
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+      #transformer.slide.left {
+        transform: translate3d(10vw,0,0);
+        opacity: 0;
+      }
+      #transformer.slide.right {
+        transform: translate3d(-10vw,0,0);
+        opacity: 0;
+      }
+      #transformer.slide.center {
+        transform: translate3d(0,10vw,0);
+        opacity: 0;
+      }
+
+      #transformer.fade {
+        will-change: transform, opacity;
+        transform: translate3d(0,0,0);
+        opacity: 1;
+      }
+      #transformer.fade.left {
+        opacity: 0;
+      }
+      #transformer.fade.right {
+        opacity: 0;
+      }
+      #transformer.fade.center {
+        opacity: 0;
+      }
+    </style>
+    <iron-location dwell-time="-1" path="{{__path}}"></iron-location>
+    <div id="common">
+
+    </div>
+    <content select=":not(app-view)"></content>
+    <div id="transformer">
+      <content select="app-view"></content>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "app-router",
+      properties: {
+        inherit: Boolean,
+        route: String,
+        greedy: Boolean,
+        __path: String,
+        transition: String
+      },
+      attached: function() {
+        console.log("attached");
+
+        this.async(function(){
+          var commonNodes = Polymer.dom(this).querySelectorAll("template[common]");
+
+          commonNodes.forEach(function(template){
+            if (!template._content) {
+              template._content = template.content;
+            }
+            var imported = document.importNode(template._content, true);
+            this.$.common.appendChild(imported);
+          }.bind(this));
+
+        })
+
+        this.listen(window, "popstate", "_navigate");
+      },
+      observers: [
+        "_navigate(__path)"
+      ],
+      _navigate: function(path) {
+        this.async(function(){
+          var hasOne = false;
+          var views = Array.from(Polymer.dom(this).querySelectorAll("app-view"));
+
+          views.forEach(function(view){
+            if(this.greedy && hasOne) {
+              return;
+            }
+
+            var build = window.routing.parse([this.route, view.getAttribute("route")]);
+            var match = window.routing.matches(build, window.location.pathname, view.hasAttribute("lazy"));
+            
+            if(this.greedy && !hasOne) {
+              if(match.matches) {
+                view.data = match.parameters;
+                this.animate(view);
+                hasOne = true;
+              }
+            } else {
+              if(match.matches) {
+                view.show = true;
+                view.data = match.parameters;
+                hasOne = true;
+              } else {
+                view.show = false;
+              }
+            }
+          }.bind(this));
+        });
+      },
+      
+      _currentView: null,
+      _transitionTime: 250,
+      _timeAfterTransitionAddedUntilAnimation: 25,
+      waitPromise: function(time) {
+        return new Promise(function(resolve) {
+          setTimeout(resolve, time);
+        });
+      },
+      
+      _queuedNewView: null,
+      _animating: false,
+      animate: function(toView) {
+        if(toView === this._currentView) return;
+
+        var toOrder = !!toView ? parseInt(toView.getAttribute("order")) : 0;
+        var fromOrder = !!this._currentView ? parseInt(this._currentView.getAttribute("order")) : 0;
+        var outDirection = 
+          this._currentView ? 
+          (toOrder > fromOrder ? "right" : 
+           (toOrder === fromOrder ? "center" : "left")) : "center";
+        var inDirection = 
+          this._currentView ? 
+          (toOrder > fromOrder ? "left" : 
+           (toOrder === fromOrder ? "center" : "right")) : "center";
+        
+        var startAnimation = function() {
+          this._animating = true;
+
+          var outPromise = Promise.resolve(toView);
+          if(this._currentView) {
+            outPromise = this.animateOut(this._currentView, outDirection); 
+          }
+          this._currentView = toView;
+
+          outPromise.then(function(view){
+            view.show = false;
+            this._currentView.show = true;
+            if(view.update) view.update();
+            if(this._currentView.update) this._currentView.update();
+            this.$.transformer.offsetHeight; //Force re-rendering before continuing to animate.
+            
+            this._goingInPromise = this.animateIn(this._currentView, inDirection).then(function(){
+              this._animating = false;
+              this._goingInPromise = null;
+            }.bind(this));
+          }.bind(this));
+        }.bind(this);
+
+        if(!this._animating) {
+          startAnimation();
+        } else {
+          if(this._goingInPromise) {
+            if(!this._queuedNewView) {
+              this._goingInPromise.then(function() {
+                this.animate(this._queuedNewView);
+                this._queuedNewView = null;
+              }.bind(this));
+            }
+            this._queuedNewView = toView;
+          } else {
+            this._currentView = toView;
+          }
+        }
+      },
+
+      animateOut: function(view, direction) {
+        return new Promise(function(resolve) {
+          requestAnimationFrame(function(){
+            this.$.transformer.classList.add("transition");
+            this.$.transformer.classList.remove("left");
+            this.$.transformer.classList.remove("right");
+            this.$.transformer.classList.remove("center");
+            this.$.transformer.classList.add("out");
+            this.$.transformer.classList.add(this.transition);
+
+            this.async(function() {
+              this.$.transformer.classList.add(direction);
+              this.async(function() {
+                this.$.transformer.classList.remove("transition");
+                this.$.transformer.classList.remove("out");
+
+                this.async(function() {
+                  resolve(view);
+                }, this._timeAfterTransitionAddedUntilAnimation);
+              }, this._transitionTime);
+            }, this._timeAfterTransitionAddedUntilAnimation);
+          }.bind(this));
+        }.bind(this));
+      },
+
+      animateIn: function(view, direction) {
+        return new Promise(function(resolve) {
+          requestAnimationFrame(function(){
+            this.$.transformer.classList.remove("transition");
+            this.$.transformer.classList.remove("left");
+            this.$.transformer.classList.remove("right");
+            this.$.transformer.classList.remove("center");
+
+            this.$.transformer.classList.add(direction);
+            this.$.transformer.classList.add(this.transition);
+
+            requestAnimationFrame(function(){
+              this.async(function() {
+                this.$.transformer.classList.add("transition");
+                this.$.transformer.classList.add("in");
+
+                this.async(function() {
+                  this.$.transformer.classList.remove("left");
+                  this.$.transformer.classList.remove("right");
+                  this.$.transformer.classList.remove("center");
+
+                  this.async(function() {
+                    this.$.transformer.classList.remove(this.transition);
+                    this.$.transformer.classList.remove("transition");
+                    this.$.transformer.classList.remove("in");
+
+                    this.async(function() {
+                      resolve(view);
+                    }, this._timeAfterTransitionAddedUntilAnimation);
+
+                  }, this._transitionTime);
+                }, this._timeAfterTransitionAddedUntilAnimation);
+
+              }, this._timeAfterTransitionAddedUntilAnimation);
+            }.bind(this));
+          }.bind(this));
+        }.bind(this));
+      }
+    })
+  </script>
+</dom-module>

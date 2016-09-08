@@ -1,0 +1,60 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<dom-module id="app-view">
+  <template>
+    <style>
+      :host([show]) {
+        display: block;
+      }
+    </style>
+    <div id="insertion">
+
+    </div>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "app-view",
+      properties: {
+        route: {
+          type: String,
+          notify: true
+        },
+        show: {
+          type: Boolean,
+          reflectToAttribute: true,
+          value: false
+        },
+        data: Object,
+        order: Number,
+        lazy: Boolean
+      },
+      behaviors: [
+        Polymer.Templatizer
+      ],
+      attached: function() {
+        this.update();
+      },
+      _currentlyShown: null,
+      update: function() {
+        if(this.show) {
+          if(!this._currentlyShown) {
+            var template = Polymer.dom(this).querySelector('template');
+            this.templatize(template);
+
+            this.$.insertion.innerHTML = "";
+            var node = this.stamp({data: this.data});
+            Polymer.dom(this.$.insertion).appendChild(node.root);
+            this._currentlyShown = node;
+          } else {
+            this._currentlyShown.data = this.data;
+          }
+        } else if(!this.show) {
+          this.$.insertion.innerHTML = "";
+          this._currentlyShown = null;
+        }
+        this.__lastShow = this.show;
+      }
+    })
+  </script>
+</dom-module>

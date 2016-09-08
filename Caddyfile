@@ -1,0 +1,17 @@
+:8080 {
+  #tls ssl/localhost.cert.pem ssl/localhost.key.pem
+  root www
+  gzip
+  
+  rewrite {
+    regexp ^/(.*)$
+    ext /
+    to /index.html
+  }
+
+  log / access.log "{remote} {status} {method} {proto} {path} {query} {when}"
+  errors error.log
+
+  mime .events text/event-stream
+  mime .css text/css
+}

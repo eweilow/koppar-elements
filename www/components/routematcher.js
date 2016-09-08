@@ -44,17 +44,17 @@ function matches(sections, path, lazy) {
       } else {
         var name = exec[1];
         var type = exec[2];
-
+        
         switch(type) {
           case "int":
             var parse = parseInt(routeSection);
-            if(isNaN(parse)) {
+            if(!isNaN(parse)) {
               parameters[name] = parse;
               return true;
             }
             break;
         }
-        parameters[name] = parse;
+        parameters[name] = routeSection;
         return true;
       }
       return false;
@@ -72,10 +72,3 @@ function matches(sections, path, lazy) {
 window.routing = {};
 window.routing.parse = parse;
 window.routing.matches = matches;
-
-/*
-console.log(matches(parse(["/", "/", "//", "////", "//", "/a"]), "/a"));
-console.log(matches(parse(["/", "/", "//", "////", "//", "/a/:id"]), "/a/1"));
-console.log(matches(parse(["/", "/", "//", "////", "//", "/a/:p:int/wa"]), "/a/3/wa"));
-console.log(matches(parse(["/", "/", "//", "////", "//", "/a/:p:int"]), "/a/a75s/s"));
-*/
