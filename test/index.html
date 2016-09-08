@@ -25,7 +25,7 @@
         box-sizing: border-box;
       }
 
-      body > app-router {
+      body > koppar-router {
         margin-left: 300px;
         box-sizing: border-box;
         display: block;
@@ -41,27 +41,26 @@
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link rel="import" href="/components/app.html" async>
-    <link rel="prefetch" href="/components/internals/app-router.html">
-    <link rel="prefetch" href="/bower_components/polymer/polymer.html">
-    <link rel="prefetch" href="/bower_components/polymer/polymer-mini.html">
-    <link rel="prefetch" href="/bower_components/polymer/polymer-micro.html">
-    <link rel="prefetch" href="/components/routematcher.js">
+    <link rel="import" href="/import.html" async>
+    <link rel="prefetch" href="../../polymer/polymer.html">
+    <link rel="prefetch" href="../../polymer/polymer-mini.html">
+    <link rel="prefetch" href="../../polymer/polymer-micro.html">
+    <link rel="prefetch" href="../router/routematcher.js">
   </head>
   <body>
-    <app-router route="/" transition="fade" greedy> <!-- greedy makes this router only use one view -->
+    <koppar-router route="/" transition="fade" greedy> <!-- greedy makes this router only use one view -->
       <div class="nav side">
         <a href="/">home</a>
         <a href="/a/test">a</a>
         <a href="/b">b</a>
         <a href="/c">c</a>
       </div>
-      <app-view route="/" order="1">
+      <koppar-view route="/" order="1">
         <template>
           <h1>home</h1>
         </template>
-      </app-view>
-      <app-view route="/a" lazy order="2"> <!-- lazy matches EVERYTHING after -->
+      </koppar-view>
+      <koppar-view route="/a" lazy order="2"> <!-- lazy matches EVERYTHING after -->
         <template>
           <div class="nav">
             <h1>a</h1>
@@ -70,41 +69,41 @@
             <a href="/a/test/b">b</a>
             <a href="/a/test/c">c</a>
           </div>
-          <app-router route="/a/:id" transition="slide" greedy>
-            <app-view route="/" order="1">
+          <koppar-router route="/a/:id" transition="slide" greedy>
+            <koppar-view route="/" order="1">
               <template>
                 <h1>home {{data.id}}</h1>
               </template>
-            </app-view>
-            <app-view route="/a" order="2">
+            </koppar-view>
+            <koppar-view route="/a" order="2">
               <template>
                 <h1>a {{data.id}}</h1>
               </template>
-            </app-view>
-            <app-view route="/b" order="3">
+            </koppar-view>
+            <koppar-view route="/b" order="3">
               <template>
                 <h1>b {{data.id}}</h1>
               </template>
-            </app-view>
-            <app-view route="/c" order="4">
+            </koppar-view>
+            <koppar-view route="/c" order="4">
               <template>
                 <h1>c {{data.id}}</h1>
               </template>
-            </app-view>
-          </app-router>
+            </koppar-view>
+          </koppar-router>
         </template>
-      </app-view>
-      <app-view route="/b" order="3">
+      </koppar-view>
+      <koppar-view route="/b" order="3">
         <template>
           <h1>b</h1>
         </template>
-      </app-view>
-      <app-view route="/c" order="4">
+      </koppar-view>
+      <koppar-view route="/c" order="4">
         <template>
           <h1>c</h1>
         </template>
-      </app-view>
-    </app-router>
+      </koppar-view>
+    </koppar-router>
 
     <script>
       window.performance && performance.mark && performance.mark("index.html");

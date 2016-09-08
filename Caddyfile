@@ -1,12 +1,15 @@
 :8080 {
   #tls ssl/localhost.cert.pem ssl/localhost.key.pem
-  root www
+  root ./
   gzip
   
   rewrite {
     regexp ^/(.*)$
     ext /
-    to /index.html
+    to /test/index.html
+  }
+  rewrite {
+    to /test/{path} /test/bower_components/{path} /router/{file} /{path} /
   }
 
   log / access.log "{remote} {status} {method} {proto} {path} {query} {when}"

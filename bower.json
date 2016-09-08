@@ -1,12 +1,16 @@
 {
-  "name": "Routing",
+  "name": "koppar-elements",
   "authors": [
-    "Erik Weilow <eweilow@digitalkoppar.se>"
+    "E. Weilow <eweilow@digitalkoppar.se>"
   ],
   "description": "",
-  "main": "",
+  "main": [
+    "router/koppar-router.html",
+    "router/koppar-view.html",
+    "router/routematcher.js"
+  ],
   "moduleType": [],
-  "license": "MIT",
+  "license": "GPL-2.0",
   "homepage": "",
   "private": true,
   "ignore": [
@@ -19,5 +23,9 @@
   "dependencies": {
     "polymer": "^1.6.1",
     "iron-location": "^0.8.8"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/eweilow/koppar-elements.git"
   }
 }

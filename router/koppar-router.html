@@ -1,8 +1,8 @@
-<link rel="import" href="/bower_components/polymer/polymer.html">
-<link rel="import" href="/bower_components/iron-location/iron-location.html">
-<script async src="../routematcher.js"></script>
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../iron-location/iron-location.html">
+<script src="routematcher.js"></script>
 
-<dom-module id="app-router">
+<dom-module id="koppar-router">
   <template>
     <style>
       
@@ -55,14 +55,14 @@
     <div id="common">
 
     </div>
-    <content select=":not(app-view)"></content>
+    <content select=":not(koppar-view)"></content>
     <div id="transformer">
-      <content select="app-view"></content>
+      <content select="koppar-view"></content>
     </div>
   </template>
   <script>
     Polymer({
-      is: "app-router",
+      is: "koppar-router",
       properties: {
         inherit: Boolean,
         route: String,
@@ -94,7 +94,7 @@
       _navigate: function(path) {
         this.async(function(){
           var hasOne = false;
-          var views = Array.from(Polymer.dom(this).querySelectorAll("app-view"));
+          var views = Array.from(Polymer.dom(this).querySelectorAll("koppar-view"));
 
           views.forEach(function(view){
             if(this.greedy && hasOne) {
