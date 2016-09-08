@@ -1,0 +1,60 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/iron-location/iron-location.html">
+<script async src="../routematcher.js"></script>
+
+<dom-module id="app-router">
+  <template>
+    <iron-location dwell-time="-1" path="{{__path}}"></iron-location>
+    <div id="common">
+
+    </div>
+    <div id="insertion">
+
+    </div>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "app-router",
+      properties: {
+        inherit: Boolean,
+        route: String,
+        __path: String,
+        transition: String
+      },
+      attached: function() {
+        this.async(function(){
+          var commonNodes = Polymer.dom(this).querySelectorAll("template[common]");
+
+          commonNodes.forEach(function(template){
+            if (!template._content) {
+              template._content = template.content;
+            }
+            var imported = document.importNode(template._content, true);
+            this.$.common.appendChild(imported);
+          }.bind(this));
+
+        })
+
+        this.listen(window, "popstate", "_navigate");
+      },
+      observers: [
+        "_navigate(__path)"
+      ],
+      _navigate: function(path) {
+        this.$.insertion.innerHTML = "";
+        var views = Array.from(Polymer.dom(this).querySelectorAll("app-view"));
+        views.forEach(function(view){
+          var build = window.routing.parse([this.route, view.getAttribute("route")]);
+          var match = window.routing.matches(build, window.location.pathname, view.hasAttribute("lazy"));
+          if(match.matches) {
+            view.show = true;
+            view.data = match.parameters;
+          } else {
+            view.show = false;
+          }
+        }.bind(this));
+      }
+    })
+  </script>
+</dom-module>

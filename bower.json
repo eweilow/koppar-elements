@@ -1,0 +1,23 @@
+{
+  "name": "Routing",
+  "authors": [
+    "Erik Weilow <eweilow@digitalkoppar.se>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "^1.6.1",
+    "iron-location": "^0.8.8"
+  }
+}

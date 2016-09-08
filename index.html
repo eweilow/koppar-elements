@@ -1,0 +1,113 @@
+<!doctype HTML>
+<html>
+  <head>
+    <style>
+      body, html {
+        font-family: "Roboto", sans-serif;
+        margin: 0; padding: 0; 
+        width: 100%;
+        min-height: 100vh;
+        font-size: 18px;
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+        background: #f0f0f0;
+      }
+      html {
+        overflow: hidden;
+        overflow-y: scroll;
+      }
+      body {
+        overflow-x: hidden;
+      }
+
+      /deep/ .nav {
+        padding: 16px;
+        line-height: 16px;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="import" href="/components/app.html" async>
+    <link rel="prefetch" href="/components/internals/app-router.html">
+    <link rel="prefetch" href="/bower_components/polymer/polymer.html">
+    <link rel="prefetch" href="/bower_components/polymer/polymer-mini.html">
+    <link rel="prefetch" href="/bower_components/polymer/polymer-micro.html">
+    <link rel="prefetch" href="/components/routematcher.js">
+  </head>
+  <body>
+    <app-router route="/" transition="fade">
+      <div class="nav">
+        <a href="/">home</a>
+        <a href="/a">a</a>
+        <a href="/b">b</a>
+        <a href="/c">c</a>
+      </div>
+      <app-view route="/">
+        <template>
+          <h1>home</h1>
+        </template>
+      </app-view>
+      <app-view route="/a" lazy> <!-- lazy matches EVERYTHING after -->
+        <template>
+          <h1>a</h1>
+          <div class="nav">
+            <a href="/a/">home</a>
+            <a href="/a/a">a</a>
+            <a href="/a/b">b</a>
+            <a href="/a/c">c</a>
+          </div>
+          <app-router route="/a" transition="fade">
+            <app-view route="/:id">
+              <template>
+                <h1>{{data}}</h1>
+              </template>
+            </app-view>
+          </app-router>
+        </template>
+      </app-view>
+      <app-view route="/b">
+        <template>
+          <h1>b</h1>
+        </template>
+      </app-view>
+      <app-view route="/c">
+        <template>
+          <h1>c</h1>
+        </template>
+      </app-view>
+    </app-router>
+
+    <script>
+      window.performance && performance.mark && performance.mark("index.html");
+      Polymer = {lazyRegister: true, dom: "shady"};
+      (function() {
+        if ("registerElement" in document
+            && "import" in document.createElement("link")
+            && "content" in document.createElement("template")) {
+          // platform is good!
+        } else {
+          // polyfill the platform!
+          var e = document.createElement("script");
+          e.src = "/bower_components/webcomponentsjs/webcomponents-lite.min.js";
+          e.defer = true;
+          document.body.appendChild(e);
+        }
+      })();
+
+      document.body.addEventListener("click", function(evt) {
+        if(evt.target.hasAttribute("href")) {
+          evt.preventDefault();
+          
+          var url = evt.target.getAttribute("href");
+
+          history.pushState(null, null, url);
+
+          // Create the event
+          var event = new CustomEvent("location-changed", {});
+
+          // Dispatch/Trigger/Fire the event
+          window.dispatchEvent(event);
+        }
+      });
+    </script>
+  </body>
+</html>
