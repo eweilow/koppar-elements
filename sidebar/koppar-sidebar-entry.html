@@ -1,0 +1,129 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../behaviors/koppar-selectable-behavior.html">
+
+<link rel="import" href="../utilities/koppar-icon.html">
+
+<dom-module is="koppar-sidebar-entry">
+  <template>
+    <style>
+      :host {
+        display: block;
+
+        --entry-height: 48px;
+        --entry-step-offset: 16px; /* The distance each level of entries are moved */
+        --entry-left-keyline: 72px;
+        --entry-right-padding: 16px;
+        --entry-font-size: 14px;
+        --entry-color: rgba(0,0,0,0.87);
+      }
+
+      :host .entry {
+        position: relative;
+        height: var(--entry-height);
+        line-height: var(--entry-height);
+        padding-left: var(--entry-left-keyline);
+        width: 100%;
+        box-sizing: border-box;
+
+        font-size: var(--entry-font-size);
+        font-weight: bold;
+        color: var(--entry-color);
+      }
+
+      :host .entry.selected {
+        color: var(--entry-selected-color, #FF5507);
+      }
+
+      :host .entry .inner {
+        position: relative;
+        padding-right: var(--entry-right-padding);
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+
+        pointer-events: none;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+      }
+
+      :host .entry .select {
+        position: absolute;
+        top: 0; right: 0; left: -100%;
+        height: var(--entry-height);
+        cursor: pointer;
+
+        color: var(--entry-selected-color, #FF5507);
+      }
+      
+      :host .entry .icon {
+        position: absolute;
+        left: -56px;
+        top: 12px;
+        width: 24px;
+        height: 24px;
+      }
+      :host .entry koppar-icon {
+        --default-size: 16px;
+      }
+
+      :host .content {
+        padding-left: 16px;
+      }
+    </style>
+    <div id="entry" class="entry">
+      <div class="select" id="select" href$="{{href}}">
+        <paper-ripple></paper-ripple>
+      </div>
+      <div class="inner">
+        <div class="icon">
+          <koppar-icon name="{{icon}}" defaults-to="circle"></koppar-icon>
+        </div>
+        {{text}}
+      </div>
+    </div>
+    <div class="content">
+      <content></content>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-sidebar-entry",
+      behaviors: [
+        Koppar.SelectableBehavior
+      ],
+      properties: {
+        href: String,
+        text: String,
+        icon: String,
+        selectRoute: String,
+        selected: Boolean
+      },
+      observers: [
+        "_enableDefaultRoute(href, selectRoute)",
+        "_selectedChanged(selected)"
+      ],
+      listeners: {
+        "entry.tap": "_tap"
+      },
+      _tap: function() {
+      },
+      attached: function() {
+        this._enableDefaultRoute(this.href, this.selectRoute);
+      },
+      _enableDefaultRoute: function(href, selectRoute) {
+        if(!selectRoute) {
+          this.selectRoute = href;
+        }
+      },
+      _selectedChanged: function(selected) {
+        if(selected) {
+          this.$.entry.classList.add("selected");
+        } else {
+          this.$.entry.classList.remove("selected");
+        }
+      }
+    })
+  </script>
+</dom-module>

@@ -1,0 +1,98 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="stylesheet" href="../../mdi/css/materialdesignicons.min.css">
+
+<dom-module is="koppar-icon">
+  <link rel="import" type="css" href="../../mdi/css/materialdesignicons.min.css">
+  <template>
+    <style>
+      :host {
+        --size: 24px;
+
+        display: block;
+        position: relative;
+        width: var(--size);
+        height: var(--size);
+        line-height: var(--size);
+      }
+
+      :host .icon {
+        width: var(--size);
+        height: var(--size);
+        line-height: var(--size);
+      }
+
+      :host([defaults-to]:not([name])) .icon::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: var(--default-size, 16px);
+        height: var(--default-size, 16px);
+        background: currentColor;
+      }
+
+      :host([defaults-to="circle"]:not([name])) .icon::before {
+        border-radius: 50%;
+      }
+
+      :host([defaults-to="square"]:not([name])) .icon::before {
+        border-radius: 0;
+      }
+
+      :host .icon::before {    
+        font: normal normal normal var(--size)/1 "Material Design Icons";
+      }
+
+    </style>
+    <div class="icon" id="icon"></div>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-icon",
+      properties: {
+        name: {
+          type: String,
+          reflectToAttribute: true,
+          observer: "_iconChanged"
+        },
+        defaultsTo: {
+          type: String,
+          reflectToAttribute: true,
+          observer: "_defaultsToChanged"
+        }
+      },
+      created: function() {
+        this.removeAttribute("unresolved");
+      },
+      _defaultsToChanged: function(newValue, oldValue) {
+        var allowed = [
+          "circle", 
+          "square"
+        ];
+
+        if(allowed.indexOf(newValue) < 0) {
+          if(allowed.indexOf(oldValue) < 0) {
+            this.defaultsTo = false;
+          } else {
+            this.defaultsTo = oldValue;
+          }
+        }
+      },
+      _iconChanged: function(icon, oldIcon) {
+        if(!this._icon) {
+          this._icon = this.$.icon;
+        }
+        this._icon.classList.remove("mdi-" + oldIcon);
+        if(icon) {
+          this._icon.classList.add("mdi");
+          this._icon.classList.add("mdi-" + icon);
+          this._icon.classList.remove("noicon");
+        } else {
+          this._icon.classList.remove("mdi");
+          this._icon.classList.add("noicon");
+        }
+      }
+    })
+  </script>
+</dom-module>

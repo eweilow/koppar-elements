@@ -1,0 +1,51 @@
+<script>
+  window.Koppar = window.Koppar || {};
+  window.Koppar.SelectableBehavior = {
+    properties: {
+      selectRoute: {
+        type: String,
+        observer: "_routeChanged"
+      },
+      selected: {
+        type: Boolean,
+        readonly: true,
+        notify: true
+      },
+      lazySelect: {
+        type: Boolean,
+        value: false,
+        observer: "_lazyChanged"
+      },
+    },
+    attached: function() {
+      this.listen(window, "location-changed", "_onLocationChanged");
+      this._onLocationChanged();
+    },
+    detached: function() {
+      this.unlisten(window, "location-changed", "_onLocationChanged");
+      this.fire("koppar-deselected");
+    },
+    _routeChanged: function(route) {
+      this._builtRoute = window.routing.parse([route]);
+      this._onLocationChanged();
+    },
+    _lazyChanged: function(route) {
+      this._onLocationChanged();
+    },
+    _onLocationChanged: function() {
+      if(!this._builtRoute) {
+        this.fire("koppar-deselected");
+        return;
+      }
+      var match = window.routing.matches(this._builtRoute, window.location.pathname, this.lazySelect);
+      if(match.matches) {
+        this.fire("koppar-selected");
+        this.selected = true;
+      } else {
+        this.fire("koppar-deselected");
+        this.selected = false;
+      }
+    }
+  };
+
+</script>
