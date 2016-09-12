@@ -1,0 +1,304 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="koppar-element-styles.html">
+
+<link rel="import" href="../../prism-element/prism-highlighter.html">
+<link rel="import" href="../../prism-element/prism-theme-default.html">
+<link rel="import" href="../../marked-element/marked-element.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+
+<dom-module is="koppar-element-documentation">
+  <template>
+    <style>
+      :host {
+        display: block;              
+        width: 100%;
+        box-sizing: border-box;
+        padding: 16px;
+      }
+
+      header {
+        font-size: 32px;
+        font-weight: bold;
+        padding: 16px;
+
+        background: #546E7A;
+        color: white;
+      }
+
+      header paper-button {
+        padding: 0 8px;
+        height: 36px;
+        line-height: 36px;
+        font-size: 14px;
+
+        background: white;
+        color: #546E7A;
+        margin: 0;
+      }
+      header paper-button koppar-icon {
+        margin-right: 8px;
+      }
+
+      header a {
+        text-decoration: none;
+      }
+
+      .card {
+        background: #EEEEEE;
+      }
+
+    </style>
+    <style include="koppar-element-styles"></style>
+    <div class="card">
+      <header>
+        <div class="row">{{title}}</div>
+        <div class="row">
+          <template is="dom-if" if="{{source}}">
+            <a href$="{{source}}" target="_blank">
+              <paper-button>
+                <koppar-icon name="github-circle"></koppar-icon>
+                source
+              </paper-button>
+            </a>
+          </template>
+          <a href$="https://github.com/eweilow/koppar-elements/issues/new?title=Issue with {{title}}&body={{placeholderBody}}{{title}}...&labels=bug" target="_blank">
+            <paper-button>
+              <koppar-icon name="github-circle"></koppar-icon>
+              report an issue
+            </paper-button>
+          </a>
+        </div>
+      </header>
+      <div>
+        <content></content>
+      </div>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-element-documentation",
+      properties: {
+        title: String,
+        source: String,
+        placeholderBody: {
+          type: String,
+          value: "I'm having a problem with "
+        }
+      },
+      created: function() {
+        this.removeAttribute("unresolved");
+      }
+    })
+  </script>
+</dom-module>
+
+<dom-module is="koppar-doc-description">
+  <template>
+    <style include="koppar-element-styles"></style>
+    <style>
+      :host {
+        font-size: 14px;
+        color: rgba(0,0,0,0.87);
+      }
+      #insertion {
+        padding: 16px;
+        padding-bottom: 0;
+      }
+    </style>
+    <div id="insertion"></div>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-doc-description",
+      behaviors: [
+        Polymer.Templatizer
+      ],
+      created: function() {
+        this.removeAttribute("unresolved");
+      },
+      attached: function() {
+        var template = this.querySelector("template");
+        if(template) {
+          this.templatize(template);
+
+          var templateInstance = this.stamp({});
+          this.$.insertion.appendChild(templateInstance.root);
+        }
+      }
+    })
+  </script>
+</dom-module>
+
+
+<dom-module is="koppar-doc-styling">
+  <template>
+    <style include="koppar-element-styles"></style>
+    <style>
+      :host li {
+        display: block;
+        list-style: none;
+        padding: 0 16px;
+        margin: 0;
+      }
+
+      :host li + li {
+        margin-top: 16px;
+      }
+
+      :host li .name {
+        font-weight: bold;
+      }
+      :host li .type {
+        margin-left: 8px;
+        font-style: italic;
+      }
+      :host li .description {
+        margin: 4px 0;
+        display: block;
+      }
+      :host li .meta {
+        color: rgba(0,0,0,0.56);
+      }
+    </style>
+    <header class="sub">Styling</header>
+    <div id="insertion"></div>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-doc-styling",
+      behaviors: [
+        Polymer.Templatizer
+      ],
+      created: function() {
+        this.removeAttribute("unresolved");
+      },
+      attached: function() {
+        var template = this.querySelector("template");
+        if(template) {
+          this.templatize(template);
+
+          var templateInstance = this.stamp({});
+          this.$.insertion.appendChild(templateInstance.root);
+        }
+      }
+    })
+  </script>
+</dom-module>
+
+<dom-module is="koppar-doc-api">
+  <template>
+    <style include="koppar-element-styles"></style>
+    <style>
+      :host li {
+        display: block;
+        list-style: none;
+        padding: 0 16px;
+        margin: 0;
+      }
+
+      :host li + li {
+        margin-top: 16px;
+      }
+
+      :host li .name {
+        font-weight: bold;
+      }
+      :host li .type {
+        margin-left: 8px;
+        font-style: italic;
+      }
+      :host li .description {
+        margin: 4px 0;
+        display: block;
+      }
+      :host li .meta {
+        color: rgba(0,0,0,0.56);
+      }
+    </style>
+    <header class="sub">API</header>
+    <div id="insertion"></div>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-doc-api",
+      behaviors: [
+        Polymer.Templatizer
+      ],
+      created: function() {
+        this.removeAttribute("unresolved");
+      },
+      attached: function() {
+        var template = this.querySelector("template");
+        if(template) {
+          this.templatize(template);
+
+          var templateInstance = this.stamp({});
+          this.$.insertion.appendChild(templateInstance.root);
+        }
+      }
+    })
+  </script>
+</dom-module>
+
+<dom-module is="koppar-doc-usage">
+  <template>
+    <style include="prism-theme-default">
+      pre {
+        padding: 0;
+        margin: 0;
+      }
+    </style>
+    <style include="koppar-element-styles"></style>
+    <style>
+      :host .markdown-html {
+        padding: 16px;
+        padding-top: 0;
+        margin: 0;
+        float: left;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    </style>
+    <header class="sub">Usage</header>
+    <prism-highlighter></prism-highlighter>
+    <marked-element sanitize="true" id="insertion">
+      <div class="markdown-html" id="markdown"></div>
+    </marked-element>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-doc-usage",
+      behaviors: [
+        Polymer.Templatizer
+      ],
+      created: function() {
+        this.removeAttribute("unresolved");
+      },
+      attached: function() {
+        var template = this.querySelector("template");
+        if(template) {
+          this.templatize(template);
+
+          var templateInstance = this.stamp({});
+
+          var dummy = document.createElement("div");
+          dummy.appendChild(templateInstance.root);
+
+          var text = dummy.querySelector("script[type='text/markdown']").text;
+          text = this.$.insertion.unindent(text);
+          this.$.insertion.markdown = text;
+        }
+        this.$.insertion.render();
+      },
+      highlight: function(code, lang) {
+        return this.fire("syntax-highlight", {code: code, lang: lang}).detail.code;
+      }
+    })
+  </script>
+</dom-module>
+
