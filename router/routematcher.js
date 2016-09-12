@@ -8,7 +8,7 @@ function parse(sections) {
     split.forEach(function(str){
       if(!str) return;
 
-      if(!(/^(?:(?:[\-A-z0-9]+)|(?:(?:\:[A-z][A-z0-9]*)?\:[A-z][A-z0-9]*))$/.test(str))) {
+      if(!(/^(?:\*|(?:[\-A-z0-9]+)|(?:(?:\:[A-z][A-z0-9]*)?\:[A-z][A-z0-9]*))$/.test(str))) {
         throw new Error("Invalid URL part: '" + str + "'");
       }
       parts.push(str);
@@ -34,8 +34,15 @@ function matches(sections, path, lazy) {
   };
 
   var matches = false;
-  if(sections.length === splitRoute.length || lazy) {
+  if(sections.length === splitRoute.length || lazy || sections.indexOf("*") >= 0) {
+    var hasEncounteredStarAtIndex = -1;
     matches = sections.every(function(section, index) {
+      if(hasEncounteredStarAtIndex >= 0 && index >= hasEncounteredStarAtIndex) return true;
+      if(section === "*") {
+        hasEncounteredStarAtIndex = index;
+        return true;
+      }
+
       var exec = /^\:([A-z][A-z0-9]*)(?:\:([A-z][A-z0-9]*))?$/.exec(section);
 
       var routeSection = splitRoute[index];
