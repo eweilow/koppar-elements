@@ -8,8 +8,15 @@
     ext /
     to /test/index.html
   }
+  
   rewrite {
-    to /test/{path} /test/bower_components/{path} /router/{file} /{path} /
+    regexp ^/bower_components/koppar-elements/(.*)$
+    to /{1}
+  }
+  
+  rewrite {
+    regexp ^/bower_components/(.*)$
+    to /test/bower_components/{1}
   }
 
   log / access.log "{remote} {status} {method} {proto} {path} {query} {when}"
