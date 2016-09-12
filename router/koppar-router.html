@@ -5,49 +5,60 @@
 <dom-module id="koppar-router">
   <template>
     <style>
-      
-      #transformer.transition {
-        transition: transform 225ms, opacity 225ms;
+      :host #transformer.transition {
+        -webkit-transition: opacity 200ms, -webkit-transform 200ms;
+        transition: opacity 200ms, -webkit-transform 200ms;
+        transition: transform 200ms, opacity 200ms;
+        transition: transform 200ms, opacity 200ms, -webkit-transform 200ms;
       }
 
-      #transformer.transition.out {
-        transition-timing-function: cubic-bezier(.42,0,1,1);
+      :host #transformer.transition.out {
+        -webkit-transition-timing-function: cubic-bezier(.42,0,1,1);
+                transition-timing-function: cubic-bezier(.42,0,1,1);
       }
 
-      #transformer.transition.in {
-        transition-timing-function: cubic-bezier(0,0,.58,1);
+      :host #transformer.transition.in {
+        -webkit-transition-timing-function: cubic-bezier(0,0,.58,1);
+                transition-timing-function: cubic-bezier(0,0,.58,1);
       }
 
-      #transformer.slide {
+      :host #transformer {
         will-change: transform, opacity;
-        transform: translate3d(0,0,0);
+      }
+
+      :host #transformer.slide {
+        -webkit-transform: translate3d(0,0,0);
+                transform: translate3d(0,0,0);
         opacity: 1;
       }
-      #transformer.slide.left {
-        transform: translate3d(10vw,0,0);
+      :host #transformer.slide.left {
+        -webkit-transform: translate3d(10vw,0,0);
+                transform: translate3d(10vw,0,0);
         opacity: 0;
       }
-      #transformer.slide.right {
-        transform: translate3d(-10vw,0,0);
+      :host #transformer.slide.right {
+        -webkit-transform: translate3d(-10vw,0,0);
+                transform: translate3d(-10vw,0,0);
         opacity: 0;
       }
-      #transformer.slide.center {
-        transform: translate3d(0,10vw,0);
+      :host #transformer.slide.center {
+        -webkit-transform: translate3d(0,10vw,0);
+                transform: translate3d(0,10vw,0);
         opacity: 0;
       }
 
-      #transformer.fade {
-        will-change: transform, opacity;
-        transform: translate3d(0,0,0);
+      :host #transformer.fade {
+        -webkit-transform: translate3d(0,0,0);
+                transform: translate3d(0,0,0);
         opacity: 1;
       }
-      #transformer.fade.left {
+      :host #transformer.fade.left {
         opacity: 0;
       }
-      #transformer.fade.right {
+      :host #transformer.fade.right {
         opacity: 0;
       }
-      #transformer.fade.center {
+      :host #transformer.fade.center {
         opacity: 0;
       }
     </style>
@@ -61,6 +72,16 @@
     </div>
   </template>
   <script>
+    function guid() {
+      function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+          .toString(16)
+          .substring(1);
+      }
+      return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+    }
+
     Polymer({
       is: "koppar-router",
       properties: {
@@ -71,8 +92,6 @@
         transition: String
       },
       attached: function() {
-        console.log("attached");
-
         this.async(function(){
           var commonNodes = Polymer.dom(this).querySelectorAll("template[common]");
 
@@ -85,13 +104,13 @@
           }.bind(this));
 
         })
-
-        this.listen(window, "popstate", "_navigate");
       },
       observers: [
         "_navigate(__path)"
       ],
       _navigate: function(path) {
+        var perfUUID = guid();
+        if(window.__performance) window.__performance.mark("routerstart"+perfUUID);
         this.async(function(){
           var hasOne = false;
           var views = Array.from(Polymer.dom(this).querySelectorAll("koppar-view"));
@@ -107,7 +126,11 @@
             if(this.greedy && !hasOne) {
               if(match.matches) {
                 view.data = match.parameters;
-                this.animate(view);
+
+                this.async(function(){
+                  this.animate(view);
+                });
+
                 hasOne = true;
               }
             } else {
@@ -120,11 +143,13 @@
               }
             }
           }.bind(this));
+          if(window.__performance) window.__performance.mark("routerend"+perfUUID);
+          if(window.__performance) window.__performance.measure("Router Route Matching", "routerstart"+perfUUID, "routerend"+perfUUID);
         });
       },
       
       _currentView: null,
-      _transitionTime: 250,
+      _transitionTime: 220,
       _timeAfterTransitionAddedUntilAnimation: 25,
       waitPromise: function(time) {
         return new Promise(function(resolve) {
@@ -149,6 +174,9 @@
            (toOrder === fromOrder ? "center" : "right")) : "center";
         
         var startAnimation = function() {
+          this._animationID = guid();
+          if(window.__performance) window.__performance.mark("routeranimationstart"+this._animationID);
+
           this._animating = true;
 
           var outPromise = Promise.resolve(toView);
@@ -160,11 +188,22 @@
           outPromise.then(function(view){
             view.show = false;
             this._currentView.show = true;
+            var eventUUID = guid();
+
+            if(window.__performance) window.__performance.mark("routercontentupdatestart"+eventUUID);
             if(view.update) view.update();
             if(this._currentView.update) this._currentView.update();
+            if(window.__performance) window.__performance.mark("routercontentupdateend"+eventUUID);
+            if(window.__performance) window.__performance.measure("Router DOM Update", "routercontentupdatestart"+eventUUID, "routercontentupdateend"+eventUUID);
+
+            if(window.__performance) window.__performance.mark("routercontentlayoutupdatestart"+eventUUID);
             this.$.transformer.offsetHeight; //Force re-rendering before continuing to animate.
+            if(window.__performance) window.__performance.mark("routercontentlayoutupdateend"+eventUUID);
+            if(window.__performance) window.__performance.measure("Router DOM Layout Recalculate", "routercontentlayoutupdatestart"+eventUUID, "routercontentlayoutupdateend"+eventUUID);
             
             this._goingInPromise = this.animateIn(this._currentView, inDirection).then(function(){
+              if(window.__performance) window.__performance.mark("routeranimationend"+this._animationID);
+              if(window.__performance) window.__performance.measure("Router Animation", "routeranimationstart"+this._animationID, "routeranimationend"+this._animationID);
               this._animating = false;
               this._goingInPromise = null;
             }.bind(this));
@@ -189,6 +228,8 @@
       },
 
       animateOut: function(view, direction) {
+        var eventUUID = guid();
+        if(window.__performance) window.__performance.mark("animateoutstart"+eventUUID);
         return new Promise(function(resolve) {
           requestAnimationFrame(function(){
             this.$.transformer.classList.add("transition");
@@ -197,23 +238,23 @@
             this.$.transformer.classList.remove("center");
             this.$.transformer.classList.add("out");
             this.$.transformer.classList.add(this.transition);
-
+            this.$.transformer.classList.add(direction);
+            if(window.__performance) window.__performance.mark("animateoutstartmove"+eventUUID);
             this.async(function() {
-              this.$.transformer.classList.add(direction);
-              this.async(function() {
-                this.$.transformer.classList.remove("transition");
-                this.$.transformer.classList.remove("out");
-
-                this.async(function() {
-                  resolve(view);
-                }, this._timeAfterTransitionAddedUntilAnimation);
-              }, this._transitionTime);
-            }, this._timeAfterTransitionAddedUntilAnimation);
+              this.$.transformer.classList.remove("out");
+              if(window.__performance) window.__performance.mark("animateoutendmove"+eventUUID);
+              if(window.__performance) window.__performance.mark("animateoutend"+eventUUID);
+              if(window.__performance) window.__performance.measure("Router Animation Out", "animateoutstart"+eventUUID, "animateoutend"+eventUUID);
+              if(window.__performance) window.__performance.measure("Router Animation Out Move", "animateoutstartmove"+eventUUID, "animateoutendmove"+eventUUID);
+              resolve(view);
+            }, this._transitionTime);
           }.bind(this));
         }.bind(this));
       },
 
       animateIn: function(view, direction) {
+        var eventUUID = guid();
+        if(window.__performance) window.__performance.mark("animateinstart"+eventUUID);
         return new Promise(function(resolve) {
           requestAnimationFrame(function(){
             this.$.transformer.classList.remove("transition");
@@ -225,28 +266,25 @@
             this.$.transformer.classList.add(this.transition);
 
             requestAnimationFrame(function(){
+              this.$.transformer.classList.add("transition");
+              this.$.transformer.classList.add("in");
+
+              this.$.transformer.classList.remove("left");
+              this.$.transformer.classList.remove("right");
+              this.$.transformer.classList.remove("center");
+              if(window.__performance) window.__performance.mark("animateinstartmove"+eventUUID);
+
               this.async(function() {
-                this.$.transformer.classList.add("transition");
-                this.$.transformer.classList.add("in");
+                if(window.__performance) window.__performance.mark("animateinendmove"+eventUUID);
+                this.$.transformer.classList.remove(this.transition);
+                this.$.transformer.classList.remove("in");
 
-                this.async(function() {
-                  this.$.transformer.classList.remove("left");
-                  this.$.transformer.classList.remove("right");
-                  this.$.transformer.classList.remove("center");
-
-                  this.async(function() {
-                    this.$.transformer.classList.remove(this.transition);
-                    this.$.transformer.classList.remove("transition");
-                    this.$.transformer.classList.remove("in");
-
-                    this.async(function() {
-                      resolve(view);
-                    }, this._timeAfterTransitionAddedUntilAnimation);
-
-                  }, this._transitionTime);
-                }, this._timeAfterTransitionAddedUntilAnimation);
-
-              }, this._timeAfterTransitionAddedUntilAnimation);
+                if(window.__performance) window.__performance.mark("animateinend"+eventUUID);
+                if(window.__performance) window.__performance.measure("Router Animation In", "animateinstart"+eventUUID, "animateinend"+eventUUID);
+                if(window.__performance) window.__performance.measure("Router Animation In Move", "animateinstartmove"+eventUUID, "animateinendmove"+eventUUID);
+                this.$.transformer.classList.remove("transition");
+                resolve(view);
+              }, this._transitionTime);
             }.bind(this));
           }.bind(this));
         }.bind(this));
