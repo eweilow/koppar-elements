@@ -4,13 +4,17 @@
   <template>
     <style>
       :host {
+        display: -webkit-box;
+        display: -ms-flexbox;
         display: flex;              
         width: 100%;
         box-sizing: border-box;
         padding: 0 16px;
         padding-top: 16px;
 
-        flex: 1 0 200px;
+        -webkit-box-flex: 1;
+            -ms-flex: 1 0 200px;
+                flex: 1 0 200px;
       }
 
       .card {
