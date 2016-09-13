@@ -118,6 +118,7 @@
         this.removeAttribute("unresolved");
       },
       attached: function() {
+        this.scopeSubtree(this.$.insertion, true);
         var template = this.querySelector("template");
         if(template) {
           this.templatize(template);
@@ -175,6 +176,7 @@
         this.removeAttribute("unresolved");
       },
       attached: function() {
+        this.scopeSubtree(this.$.insertion, true);
         var template = this.querySelector("template");
         if(template) {
           this.templatize(template);
@@ -237,6 +239,7 @@
         this.removeAttribute("unresolved");
       },
       attached: function() {
+        this.scopeSubtree(this.$.insertion, true);
         var template = this.querySelector("template");
         if(template) {
           this.templatize(template);
@@ -286,6 +289,7 @@
         this.removeAttribute("unresolved");
       },
       attached: function() {
+        this.scopeSubtree(this.$.insertion, true);
         var template = this.querySelector("template");
         if(template) {
           this.templatize(template);

@@ -38,7 +38,7 @@
       .flex-grid > koppar-element-card {
         padding: 8px;
       }
-      
+
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -199,16 +199,22 @@
         var durations = {
 
         };
-
+        
         var dateStart = Date.now();
         window.__performance = window.__performance || {};
-        window.__performance.now = window.performance.now || function() {
+
+        var hasNativePerformanceNow = "performance" in window && "now" in window.performance;
+        window.__performance.now = function() {
+          if(hasNativePerformanceNow) return window.performance.now();
           return Date.now() - dateStart;
         };
+        var hasNativePerformanceMark = "performance" in window && "mark" in window.performance;
         window.__performance.mark = function(str) { 
           marks[str] = window.performance.now();
-          window.performance.mark(str);
+
+          if(hasNativePerformanceMark) window.performance.mark(str);
         };
+        var hasNativePerformanceMeasure = "performance" in window && "measure" in window.performance;
         window.__performance.measure = function(name, startEntry, endEntry) { 
           var start = marks[startEntry];
           var end = marks[endEntry];
@@ -224,17 +230,12 @@
               timingValue: duration
             });
           }
-          window.performance.measure(name, startEntry, endEntry);
+          if(hasNativePerformanceMeasure) window.performance.measure(name, startEntry, endEntry);
         };
-        if(!("performance" in window
-          && "mark" in window.performance
-          && "measure" in window.performance)) {
-            window.performance = window.__performance;
-        }
       })();
 
       function sendEvent() {
-        performance.mark("navigationstart");
+        window.__performance.mark("navigationstart");
 
         // Create the event
         var event = new CustomEvent("location-changed", {});
@@ -242,8 +243,8 @@
         // Dispatch/Trigger/Fire the event
         window.dispatchEvent(event);
 
-        performance.mark("navigationend");
-        performance.measure("Navigation Event", "navigationstart", "navigationend");
+        window.__performance.mark("navigationend");
+        window.__performance.measure("Navigation Event", "navigationstart", "navigationend");
       }
 
       var navigations = 0;
