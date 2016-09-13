@@ -28,7 +28,6 @@
       header paper-button {
         padding: 0 8px;
         height: 36px;
-        line-height: 36px;
         font-size: 14px;
 
         background: white;
@@ -40,6 +39,7 @@
       }
 
       header a {
+        height: 36px;
         text-decoration: none;
       }
 
@@ -47,12 +47,22 @@
         background: #EEEEEE;
       }
 
+      .flex__row {
+        display: flex !important;
+        margin: -4px;
+        flex-wrap: wrap;
+      }
+      .flex__row > a {
+        display: block;
+        margin: 4px;
+      }
+
     </style>
     <style include="koppar-element-styles"></style>
     <div class="card">
       <header>
         <div class="row">{{title}}</div>
-        <div class="row">
+        <div class="row flex__row">
           <template is="dom-if" if="{{source}}">
             <a href$="{{source}}" target="_blank">
               <paper-button>
@@ -64,7 +74,13 @@
           <a href$="https://github.com/eweilow/koppar-elements/issues/new?title=Issue with {{title}}&body={{placeholderBody}}{{title}}...&labels=bug" target="_blank">
             <paper-button>
               <koppar-icon name="github-circle"></koppar-icon>
-              report an issue
+              bugs
+            </paper-button>
+          </a>
+          <a href$="https://github.com/eweilow/koppar-elements/issues/new?title=Accessibility issue with {{title}}&body={{a11yPlaceholderBody}}{{title}}...&labels=a11y" target="_blank">
+            <paper-button>
+              <koppar-icon name="github-circle"></koppar-icon>
+              a11y issue
             </paper-button>
           </a>
         </div>
@@ -83,6 +99,10 @@
         placeholderBody: {
           type: String,
           value: "I'm having a problem with "
+        },
+        a11yPlaceholderBody: {
+          type: String,
+          value: "I'm having an accessibility problem with "
         }
       },
       created: function() {
