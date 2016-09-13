@@ -1,0 +1,119 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<dom-module id="koppar-image">
+  <template>
+    <style>
+      :host {
+        position: relative;
+        display: block;
+        background: #9e9e9e;
+        contain: strict;
+      }
+      :host #background {
+        opacity: 0;
+        will-change: opacity;
+        width: 100%;
+        height: 100%;
+        background-position: center;
+        background-size: cover;
+      }
+      :host([zoom]) #background {
+        will-change: opacity, transform;
+        transform-origin: center 25%;
+        transform: scale3d(1.1, 1.1, 1.1);
+      }
+      :host([zoom]) #background.loaded {
+        transform: none;
+      }
+      :host([round]) #background {
+        border-radius: 50%;
+      }
+      :host #background.loaded {
+        opacity: 1;
+      }
+      :host([transition]) #background {
+        transition-property: opacity;
+      }
+      :host([zoom]) #background.transition {
+        transition-property: opacity, transform;
+      }
+    </style>
+    <div id="background" class="img"></div>
+    <!---->
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-image",
+      properties: {
+        src: {
+          type: String,
+          observer: "_srcChanged"
+        },
+        loaded: {
+          type: Boolean,
+          default: false,
+          reflectToAttribute: true,
+          readonly: true
+        },
+        zoom: {
+          type: Boolean,
+          reflectToAttribute: true
+        },
+        round: {
+          type: Boolean,
+          reflectToAttribute: true
+        },
+        transition: {
+          type: Boolean,
+          reflectToAttribute: true,
+          readonly: true
+        },
+        milliseconds: {
+          type: Number,
+          value: 225
+        }
+      },
+      _eventListener: null,
+      _loadingImage: null,
+      _srcChanged: function(newValue, oldValue) {
+        if(this._eventListener) {
+          if(this._loadingImage) {
+            this._loadingImage.removeEventListener("load", this._eventListener);
+            this._loadingImage.remove();
+          }
+          delete this._loadingImage;
+          delete this._eventListener;
+        }
+        var unloadPromise = Promise.resolve();
+        this._eventListener = function() {
+          unloadPromise.then(function(){
+            this.$.background.style.backgroundImage = `url(${image.src})`;
+            this.async(function(){
+              this.$.background.classList.add("loaded");
+              this.loaded = true;
+              this.async(function(){
+                this.transition = false;
+              }, this.milliseconds * 1.2);
+            });
+          }.bind(this));
+        }.bind(this);
+        if(this.loaded) {
+          unloadPromise = new Promise(function(resolve) {
+            this.transition = true;
+            this.$.background.style.transitionDuration = this.milliseconds + "ms";
+            this.$.background.classList.remove("loaded");
+            this.async(function(){
+              resolve();
+            }, this.milliseconds * 1.2);
+          }.bind(this));
+        }
+        var image = document.createElement("img");
+        image.addEventListener("load", this._eventListener);
+        image.src = newValue;
+        this.transition = true;
+        this.$.background.style.transitionDuration = this.milliseconds + "ms";
+        this.$.background.classList.add("transition");
+      }
+    })
+  </script>
+</dom-module>

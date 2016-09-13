@@ -15,6 +15,9 @@
         --entry-right-padding: 16px;
         --entry-font-size: 14px;
         --entry-color: rgba(0,0,0,0.87);
+
+        --entry-icon-default-size: 16px;
+        --default-size: var(--entry-icon-default-size);
       }
 
       :host .entry {
@@ -64,10 +67,6 @@
         width: 24px;
         height: 24px;
       }
-      :host .entry koppar-icon {
-        --default-size: 16px;
-      }
-
       :host .content {
         padding-left: 16px;
       }
@@ -98,7 +97,10 @@
         text: String,
         icon: String,
         selectRoute: String,
-        selected: Boolean
+        selected: {
+          type: Boolean,
+          readonly: true
+        }
       },
       observers: [
         "_enableDefaultRoute(href, selectRoute)",

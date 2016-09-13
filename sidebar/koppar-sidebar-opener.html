@@ -1,0 +1,104 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../paper-ripple/paper-ripple.html">
+<link rel="import" href="../navbar/koppar-navbar-action.html">
+
+<dom-module id="koppar-sidebar-opener">
+  <template>
+    <style>
+      :host {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        width: 40px;
+        height: 40px;
+
+        transform: translate3d(0,0,0);
+        opacity: 0;
+        will-change: opacity;
+
+        transition: opacity 225ms;
+
+        pointer-events: none;
+      }
+
+      :host([show]) {
+        opacity: 1;
+        pointer-events: all;
+      }
+    </style>
+    <koppar-navbar-action id="action" icon="{{icon}}"></koppar-navbar-action>
+    <!---->
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-sidebar-opener",
+      properties: {
+        open: {
+          type: Boolean,
+          defaultValue: true,
+          reflectToAttribute: true
+        },
+        show: {
+          type: Boolean,
+          defaultValue: true,
+          reflectToAttribute: true
+        },
+        icon: {
+          type: String,
+          value: "menu"
+        },
+        sidebarSelector: String
+      },
+      listeners: {
+        "tap": "_toggle"
+      },
+      observers: [
+        "_changeIcon(open)",
+        "_selectSidebar(sidebarSelector)"
+      ],
+      _selectSidebar: function(selector) {
+        var sidebar = document.querySelector(selector);
+
+        if(this._sidebar) {
+          this.unlisten(this._sidebar, "open", "_sidebarOpened");
+          this.unlisten(this._sidebar, "close", "_sidebarClosed");
+          this.unlisten(this._sidebar, "fix", "_sidebarFixed");
+          this.unlisten(this._sidebar, "unfix", "_sidebarUnfixed");
+        }
+        this._sidebar = sidebar;
+        this.show = !this._sidebar.fixed;
+        this.listen(this._sidebar, "open", "_sidebarOpened");
+        this.listen(this._sidebar, "close", "_sidebarClosed");
+        this.listen(this._sidebar, "fix", "_sidebarFixed");
+        this.listen(this._sidebar, "unfix", "_sidebarUnfixed");
+      },
+      _changeIcon: function(open) {
+        if(open) this.icon = "close";
+        else this.icon = "menu";
+      },
+      _sidebarOpened: function() {
+        this.open = true;
+      },
+      _sidebarClosed: function() {
+        this.open = false;
+      },
+      _sidebarFixed: function() {
+        this.show = false;
+      },
+      _sidebarUnfixed: function() {
+        this.show = true;
+      },
+      _toggle: function(){
+        this.open = !this.open;
+        this.async(function(){
+          if(!this._sidebar) return;
+          if(this.open) {
+            this._sidebar.open();
+          } else {
+            this._sidebar.close();
+          }
+        }, 50);
+      }
+    })
+  </script>
+</dom-module>

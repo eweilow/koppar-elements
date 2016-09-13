@@ -1,0 +1,62 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<dom-module is="koppar-element-card">
+  <template>
+    <style>
+      :host {
+        display: block;              
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 16px;
+        padding-top: 16px;
+
+        flex: 1 0 200px;
+      }
+
+      .card {
+        cursor: pointer;
+        position: relative;
+      }
+
+      header {
+        color: rgba(0,0,0,0.56);
+        font-size: 24px;
+        font-weight: bold;
+        padding: 16px;
+      }
+
+      div.description {
+        border-top: 1px solid rgba(0,0,0,0.12);
+        padding: 16px;
+        font-size: 14px;
+      }
+
+    </style>
+    <style include="koppar-element-styles"></style>
+    <div href$="{{href}}" id="card" class="card">
+      <header>{{title}}</header>
+      <div class="description">
+        <content></content>
+      </div>
+      <paper-ripple></paper-ripple>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-element-card",
+      properties: {
+        title: String,
+        href: String
+      },
+      listeners: {
+        "card.tap": "_onTap"
+      },
+      _onTap: function() {
+        this.fire("click")
+      },
+      created: function() {
+        this.removeAttribute("unresolved");
+      }
+    })
+  </script>
+</dom-module>

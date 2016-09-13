@@ -1,6 +1,7 @@
 <!doctype HTML>
 <html>
   <head>
+    <title>Koppar Elements</title>
     <style>
       body, html {
         font-family: "Roboto", sans-serif;
@@ -26,88 +27,165 @@
       }
 
       body > koppar-router {
-        margin-left: 300px;
         box-sizing: border-box;
         display: block;
         overflow: hidden;
       }
 
-      .side {
-        position: fixed;
-        top: 0; left: 0; width: 300px;
-        bottom: 0;
-        background: white;
+      .flex-grid {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 8px;
+      }
+
+      .flex-grid > koppar-element-card {
+        padding: 8px;
+      }
+
+      @media(min-width: 601px) {
+        body {
+          padding-left: 320px;
+          box-sizing: border-box;
+        }
       }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-    <link rel="import" href="/import.html" async>
-    <link rel="prefetch" href="../../polymer/polymer.html">
-    <link rel="prefetch" href="../../polymer/polymer-mini.html">
-    <link rel="prefetch" href="../../polymer/polymer-micro.html">
-    <link rel="prefetch" href="../router/routematcher.js">
+    <link rel="import" href="/bower_components/koppar-elements/test/import.html" async>
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/router/routematcher.js">
+    <link rel="prefetch" href="/bower_components/tinycolor/dist/tinycolor-min.js">
+    <link rel="prefetch" href="/bower_components/mdi/css/materialdesignicons.min.css">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/router/koppar-router.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/router/koppar-view.html">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/behaviors/koppar-selectable-behavior.html">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/documentation/koppar-element-styles.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/documentation/koppar-element-card.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/documentation/koppar-element-documentation.html">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/navbar/koppar-navbar.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/navbar/koppar-navbar-action.html">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/sidebar/koppar-sidebar.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/sidebar/koppar-sidebar-entry.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/sidebar/koppar-sidebar-header.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/sidebar/koppar-sidebar-opener.html">
+
+    <link rel="prefetch" href="/bower_components/koppar-elements/utilities/koppar-icon.html">
+    <link rel="prefetch" href="/bower_components/koppar-elements/utilities/koppar-image.html">
   </head>
   <body>
+    <koppar-sidebar id="main-sidebar" fix-width="600">
+      <koppar-sidebar-header></koppar-sidebar-header>
+      <koppar-sidebar-entry href="/" icon="rocket" text="Home"></koppar-sidebar-entry>
+      <koppar-sidebar-entry href="/elements/" icon="code-tags" text="Elements">
+        <koppar-sidebar-entry href="/elements/navbar/" select-route="/elements/navbar/*" text="Navbar elements"></koppar-sidebar-entry>
+        <koppar-sidebar-entry href="/elements/sidebar/" select-route="/elements/sidebar/*" text="Sidebar elements"></koppar-sidebar-entry>
+      </koppar-sidebar-entry>
+    </koppar-sidebar>
+
     <koppar-router route="/" transition="fade" greedy> <!-- greedy makes this router only use one view -->
-      <div class="nav side">
-        <a href="/">home</a>
-        <a href="/a/test">a</a>
-        <a href="/b">b</a>
-        <a href="/c">c</a>
-      </div>
       <koppar-view route="/" order="1">
         <template>
-          <h1>home</h1>
+          <koppar-navbar title="koppar-elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <h1>Welcome</h1>
         </template>
       </koppar-view>
-      <koppar-view route="/a" lazy order="2"> <!-- lazy matches EVERYTHING after -->
+      
+      <koppar-view route="/elements" order="2"> <!-- lazy matches EVERYTHING after -->
         <template>
-          <div class="nav">
-            <h1>a</h1>
-            <a href="/a/test/">home</a>
-            <a href="/a/test/a">a</a>
-            <a href="/a/test/b">b</a>
-            <a href="/a/test/c">c</a>
+          <koppar-navbar title="Elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <div class="flex-grid">
+            <koppar-element-card title="navbar" href="/elements/navbar/">Navbar elements</koppar-element-card>
+            <koppar-element-card title="sidebar" href="/elements/sidebar/">Sidebar elements</koppar-element-card>
           </div>
-          <koppar-router route="/a/:id" transition="slide" greedy>
+        </template>
+      </koppar-view>
+
+      <koppar-view route="/elements/navbar" lazy order="3"> <!-- lazy matches EVERYTHING after -->
+        <template>
+          <koppar-navbar title="Navbar Elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <koppar-router route="/elements/navbar" transition="fade" greedy>
             <koppar-view route="/" order="1">
               <template>
-                <h1>home {{data.id}}</h1>
+                <div class="flex-grid">
+                  <koppar-element-card title="koppar-navbar" href="/elements/navbar/koppar-navbar/">The navbar wrapper</koppar-element-card>
+                  <koppar-element-card title="koppar-navbar-action" href="/elements/navbar/koppar-navbar-action/">An action residing in the navbar</koppar-element-card>
+                </div>
               </template>
             </koppar-view>
-            <koppar-view route="/a" order="2">
+            <koppar-view route="/koppar-navbar" order="1">
               <template>
-                <h1>a {{data.id}}</h1>
+                <koppar-element-documentation title="koppar-navbar">
+                  <koppar-doc-description>
+
+                  </koppar-doc-description>
+                </koppar-element-documentation>
               </template>
             </koppar-view>
-            <koppar-view route="/b" order="3">
+            <koppar-view route="/koppar-navbar-action" order="2">
               <template>
-                <h1>b {{data.id}}</h1>
-              </template>
-            </koppar-view>
-            <koppar-view route="/c" order="4">
-              <template>
-                <h1>c {{data.id}}</h1>
+                <koppar-element-documentation title="koppar-navbar-action">
+                  
+                </koppar-element-documentation>
               </template>
             </koppar-view>
           </koppar-router>
         </template>
       </koppar-view>
-      <koppar-view route="/b" order="3">
+
+      <koppar-view route="/elements/sidebar" lazy order="4"> <!-- lazy matches EVERYTHING after -->
         <template>
-          <h1>b</h1>
-        </template>
-      </koppar-view>
-      <koppar-view route="/c" order="4">
-        <template>
-          <h1>c</h1>
+          <koppar-navbar title="Sidebar Elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <koppar-router route="/elements/sidebar" transition="fade" greedy>
+            <koppar-view route="/" order="1">
+              <template>
+                <div class="flex-grid">
+                  <koppar-element-card title="koppar-sidebar" href="/elements/sidebar/koppar-sidebar/">The sidebar element</koppar-element-card>
+                  <koppar-element-card title="koppar-sidebar-entry" href="/elements/sidebar/koppar-sidebar-entry/">A link for the sidebar</koppar-element-card>
+                  <koppar-element-card title="koppar-sidebar-header" href="/elements/sidebar/koppar-sidebar-header/">A sidebar header</koppar-element-card>
+                </div>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-sidebar" order="2">
+              <template>
+                <koppar-sidebar-doc></koppar-sidebar-doc>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-sidebar-entry" order="3">
+              <template>
+                <koppar-sidebar-entry-doc></koppar-sidebar-entry-doc>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-sidebar-header" order="3">
+              <template>
+                <koppar-sidebar-header-doc></koppar-sidebar-header-doc>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-sidebar-opener" order="4">
+              <template>
+                <h1>koppar-sidebar-opener</h1>
+              </template>
+            </koppar-view>
+          </koppar-router>
         </template>
       </koppar-view>
     </koppar-router>
 
     <script>
       window.performance && performance.mark && performance.mark("index.html");
-      Polymer = {lazyRegister: true, dom: "shady"};
+      Polymer = {lazyRegister: true, dom: "shadow"};
       (function() {
         if ("registerElement" in document
             && "import" in document.createElement("link")
@@ -122,20 +200,79 @@
         }
       })();
 
+      (function() {
+        var marks = {
+
+        };
+
+        var durations = {
+
+        };
+
+        var dateStart = Date.now();
+        window.__performance = window.__performance || {};
+        window.__performance.now = window.performance.now || function() {
+          return Date.now() - dateStart;
+        };
+        window.__performance.mark = function(str) { 
+          marks[str] = window.performance.now();
+          window.performance.mark(str);
+        };
+        window.__performance.measure = function(name, startEntry, endEntry) { 
+          var start = marks[startEntry];
+          var end = marks[endEntry];
+
+          var duration = end - start;
+          durations[name] = duration;
+
+          if("ga" in window) {
+            ga("send", {
+              hitType: "timing",
+              timingCategory: "User Timings",
+              timingVar: "name",
+              timingValue: duration
+            });
+          }
+          window.performance.measure(name, startEntry, endEntry);
+        };
+        if(!("performance" in window
+          && "mark" in window.performance
+          && "measure" in window.performance)) {
+            window.performance = window.__performance;
+        }
+      })();
+
+      function sendEvent() {
+        performance.mark("navigationstart");
+
+        // Create the event
+        var event = new CustomEvent("location-changed", {});
+
+        // Dispatch/Trigger/Fire the event
+        window.dispatchEvent(event);
+
+        performance.mark("navigationend");
+        performance.measure("Navigation Event", "navigationstart", "navigationend");
+      }
+
+      var navigations = 0;
       document.body.addEventListener("click", function(evt) {
         if(evt.target.hasAttribute("href")) {
           evt.preventDefault();
           
           var url = evt.target.getAttribute("href");
 
+          if(window.location.pathname === url) return;
+          console.info("Navigating to " + url);
+
           history.pushState(null, null, url);
 
-          // Create the event
-          var event = new CustomEvent("location-changed", {});
-
-          // Dispatch/Trigger/Fire the event
-          window.dispatchEvent(event);
+          sendEvent();
         }
+      });
+
+      window.addEventListener("popstate", function(evt) {
+        sendEvent();
       });
     </script>
   </body>

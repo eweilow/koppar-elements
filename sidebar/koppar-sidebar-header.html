@@ -1,0 +1,68 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../utilities/koppar-image.html">
+
+<dom-module id="koppar-sidebar-header">
+  <template>
+    <style>
+      :host {
+        height: 192px;
+        width: 100%;
+        background: #0b3b66;
+        position: relative;
+        display: block;
+      }
+      :host nice-img {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        pointer-events: none;
+        border-radius: 0;
+        background: #0b3b66;
+      }
+      :host nice-img[transition] ~ .fader {
+        transition: opacity 225ms;
+      }
+      .fader {
+        left: 0; right: 0; bottom: 0; top: 0;
+        opacity: 0;
+      }
+      .fader::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0; height: 96px;
+        background: linear-gradient(to bottom, transparent, black);
+        opacity: 0.4;
+      }
+      :host nice-img[loaded] ~ .fader {
+        opacity:1;
+      }
+      :host span {
+        z-index: 1;
+        position: absolute;
+        left: 16px; right: 16px;
+        color: white;
+      }
+      :host span.primary {
+        bottom: 16px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 32px;
+        font-weight: bold;
+      }
+      :host span.secondary {
+        bottom: 56px;
+        height: 24px;
+        line-height: 24px;
+      }
+    </style>
+    <nice-img src="/static/header.jpg"></nice-img>
+    <div class="fader">
+      <span class="primary"></span>
+      <span class="secondary"></span>
+    </div>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-sidebar-header"
+    })
+  </script>
+</dom-module>
