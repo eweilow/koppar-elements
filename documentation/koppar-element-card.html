@@ -9,8 +9,6 @@
         display: flex;              
         width: 100%;
         box-sizing: border-box;
-        padding: 0 16px;
-        padding-top: 16px;
 
         -webkit-box-flex: 1;
             -ms-flex: 1 0 200px;
@@ -22,6 +20,8 @@
         position: relative;
         width: 100%;
         padding-bottom: 32px;
+        text-decoration: none;
+        color: rgba(0,0,0,0.87);
       }
 
       header {
@@ -43,13 +43,13 @@
 
     </style>
     <style include="koppar-element-styles"></style>
-    <div href$="{{href}}" id="card" class="card">
+    <a href$="{{href}}" id="card" class="card">
       <header>{{title}}</header>
       <div class="description">
         <content></content>
       </div>
       <paper-ripple></paper-ripple>
-    </div>
+    </a>
   </template>
   <script>
     Polymer({
@@ -59,10 +59,6 @@
         href: String
       },
       listeners: {
-        "card.tap": "_onTap"
-      },
-      _onTap: function() {
-        this.fire("click")
       },
       created: function() {
         this.removeAttribute("unresolved");
