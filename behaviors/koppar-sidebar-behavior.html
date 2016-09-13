@@ -72,14 +72,22 @@
       this.opened = false;
     },
 
-    open: function() {
+    open: function(evt) {
+      if(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+      }
       if(this.fixed) return;
       if(this.opened) return;
 
       this.opened = true;
     },
 
-    close: function() {
+    close: function(evt) {
+      if(evt) {
+        evt.preventDefault();
+        evt.stopImmediatePropagation();
+      }
       if(this.fixed) return;
       if(!this.opened) return;
 
