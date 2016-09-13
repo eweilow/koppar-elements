@@ -217,13 +217,19 @@
         color: rgba(0,0,0,0.56);
       }
     </style>
-    <header class="sub">API</header>
+    <header class="sub">{{type}}</header>
     <div id="insertion"></div>
     <content></content>
   </template>
   <script>
     Polymer({
       is: "koppar-doc-api",
+      properties: {
+        type: {
+          type: String,
+          value: "Properties"
+        }
+      },
       behaviors: [
         Polymer.Templatizer
       ],

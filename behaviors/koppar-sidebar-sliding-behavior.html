@@ -4,18 +4,19 @@
     properties: {
       paneWidth: {
         type: Number,
+        readonly: true,
         notify: true
       },
 
       /* Tells us when this sidebar use a max width, instead of width = (window_width - widthStep) */
       mobileBreakpointWidth: {
         type: Number,
-        value: 600
+        value: 800
       },
 
       tabletBreakpointWidth: {
         type: Number,
-        value: 1000
+        value: 1200
       },
 
       mobileWidth: {
@@ -48,15 +49,70 @@
         value: 24
       },
 
-      rendering: Boolean,
+      rendering: {
+        type: Boolean,
+        reflectToAttribute: true,
+        readonly: true,
+        notify: true
+      },
+
       sliding: {
         type: Boolean,
         reflectToAttribute: true,
+        readonly: true,
         notify: true
       },
+
       _slidingIn: Boolean,
       _slidingOut: Boolean,
-      _prepareSlide: Boolean
+      _prepareSlide: Boolean,
+
+      /* Tells us when this sidebar should fix */
+      responsiveBreakpoint: {
+        type: Number,
+        value: 800
+      },
+
+      automaticallyAddGlobalStyles: Boolean
+    },
+
+    addGlobalStylesForBody: function() {
+      var minimumBreak = Math.max(this.responsiveBreakpoint);
+      var template = [
+        "body {",
+        "  margin: 0; padding: 0;",
+        "  width: 100%;",
+        "  overflow-x: hidden;",
+        "  box-sizing: border-box;",
+        "}",
+        "@media (min-width: "+(this.responsiveBreakpoint+1)+"px) and (min-width: "+(this.tabletBreakpointWidth+1)+"px) {",
+        "  body {",
+        "    padding-left: "+(this.desktopWidth)+"px;",
+        "  }",
+        "}",
+        "@media (min-width: "+(this.responsiveBreakpoint+1)+"px) and (min-width: "+(this.mobileBreakpointWidth+1)+"px) and (max-width: "+(this.tabletBreakpointWidth)+"px) {",
+        "  body {",
+        "    padding-left: "+(this.tabletWidth)+"px;",
+        "  }",
+        "}",
+        "@media (min-width: "+(this.responsiveBreakpoint+1)+"px) and (max-width: "+(this.mobileBreakpointWidth)+"px) {",
+        "  body {",
+        "    padding-left: "+(this.mobileWidth)+"px;",
+        "  }",
+        "}"
+      ];
+      if(!this._globalStyleNode) {
+        this._globalStyleNode = document.createElement("style")
+        document.head.appendChild(this._globalStyleNode);
+      }
+      this._globalStyleNode.textContent = template.join("\n");
+    },
+
+    removeGlobalStyles: function() {
+      if(!this._globalStyleNode) return;
+
+      this._globalStyleNode.remove();
+      this._globalStyleNode = null;
     },
 
     created: function() {
@@ -69,6 +125,8 @@
       this.listen(window, "touchmove", "__onTouchMove");
       this.listen(window, "touchend", "__onTouchEnd");
       this.__onWindowResized__slide();
+
+      this.addGlobalStylesForBody();
     },
 
     detached: function() {
@@ -76,6 +134,8 @@
       this.unlisten(window, "touchstart", "__onTouchStart");
       this.unlisten(window, "touchmove", "__onTouchMove");
       this.unlisten(window, "touchend", "__onTouchEnd");
+
+      this.removeGlobalStyles();
     },
 
     listeners: {

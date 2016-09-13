@@ -3,7 +3,7 @@
   <head>
     <title>Koppar Elements</title>
     <style>
-      body, html {
+      html {
         font-family: "Roboto", sans-serif;
         margin: 0; padding: 0; 
         width: 100%;
@@ -11,13 +11,8 @@
         font-size: 18px;
         -webkit-tap-highlight-color: rgba(0,0,0,0);
         background: #f0f0f0;
-      }
-      html {
         overflow: hidden;
         overflow-y: scroll;
-      }
-      body {
-        overflow-x: hidden;
       }
 
       .nav {
@@ -36,18 +31,14 @@
         display: flex;
         flex-wrap: wrap;
         padding: 8px;
+        align-items: stretch;
+        align-content: stretch;
       }
 
       .flex-grid > koppar-element-card {
         padding: 8px;
       }
-
-      @media(min-width: 601px) {
-        body {
-          padding-left: 320px;
-          box-sizing: border-box;
-        }
-      }
+      
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
@@ -78,7 +69,7 @@
     <link rel="prefetch" href="/bower_components/koppar-elements/utilities/koppar-image.html">
   </head>
   <body>
-    <koppar-sidebar id="main-sidebar" fix-width="600">
+    <koppar-sidebar id="main-sidebar">
       <koppar-sidebar-header></koppar-sidebar-header>
       <koppar-sidebar-entry href="/" icon="rocket" text="Home"></koppar-sidebar-entry>
       <koppar-sidebar-entry href="/elements/" icon="code-tags" text="Elements">

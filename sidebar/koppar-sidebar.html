@@ -9,10 +9,10 @@
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
         pointer-events: none;
-        --sidebar-pane-width: 320px;
-        --sidebar-pane-background: white;
 
+        --sidebar-pane-background: white;
         --sidebar-open-background-opacity: 0.25;
+
         z-index: 10000;
       }
 
@@ -29,7 +29,7 @@
       :host .pane {
         position: fixed;
         top: 0; left: 0; bottom: 0;
-        width: var(--sidebar-pane-width);
+        width: 320px;
         background: var(--sidebar-pane-background);
         -webkit-overflow-scrolling: touch;
 
@@ -78,7 +78,7 @@
       }
 
       :host(:not([fixed]):not([opened])) .pane {
-        transform: translate3d(calc(-var(--sidebar-pane-width) - 10px), 0, 0);
+        transform: translate3d(-330px, 0, 0);
       }
 
       :host(:not([fixed])) .pane::before {

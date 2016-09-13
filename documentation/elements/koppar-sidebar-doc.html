@@ -11,25 +11,179 @@
       title="koppar-sidebar"
       source="https://github.com/eweilow/koppar-elements/blob/master/path/koppar-sidebar.html">
       <koppar-doc-description>
-        <template>The koppar-sidebar element provides ...</template>
+        <template>The koppar-sidebar element provides an easy element to use for a navigation drawer.</template>
       </koppar-doc-description>
       <koppar-doc-styling>
         <template>
           <li>
-            <span class="name">--custom-variable</span>
-            <span class="type">size</span>
-            <span class="description">Defines a custom variable.</span>
-            <span class="meta">default: undefined</span>
+            <span class="name">--sidebar-pane-background</span>
+            <span class="type">color</span>
+            <span class="description">Sets the background of the pane.</span>
+            <span class="meta">default: white</span>
+          </li>
+          <li>
+            <span class="name">--sidebar-open-background-opacity</span>
+            <span class="type">range 0-1</span>
+            <span class="description">Sets the opacity of the background when this sidebar is open.</span>
+            <span class="meta">default: 0.25</span>
           </li>
         </template>
       </koppar-doc-styling>
-      <koppar-doc-api>
+      <koppar-doc-api type="Events">
         <template>
           <li>
-            <span class="name">text</span>
-            <span class="type">String</span>
-            <span class="description">The text of this element.</span>
-            <span class="meta"></span>
+            <span class="name">fix</span>
+            <span class="type">CustomEvent</span>
+            <span class="description">Fired when this sidebar is fixed</span>
+          </li>
+          <li>
+            <span class="name">unfix</span>
+            <span class="type">CustomEvent</span>
+            <span class="description">Fired when this sidebar is unfixed</span>
+          </li>
+          <li>
+            <span class="name">open</span>
+            <span class="type">CustomEvent</span>
+            <span class="description">Fired when this sidebar is opened</span>
+          </li>
+          <li>
+            <span class="name">closed</span>
+            <span class="type">CustomEvent</span>
+            <span class="description">Fired when this sidebar is closed</span>
+          </li>
+        </template>
+      </koppar-doc-api>
+      <koppar-doc-api type="API">
+        <template>
+          <li>
+            <span class="name">fix()</span>
+            <span class="type">void</span>
+            <span class="description">Fixes this sidebar to the viewport.</span>
+          </li>
+          <li>
+            <span class="name">unfix()</span>
+            <span class="type">void</span>
+            <span class="description">Unfixes this sidebar from the viewport.</span>
+          </li>
+          <li>
+            <span class="name">open()</span>
+            <span class="type">void</span>
+            <span class="description">Opens this sidebar, unless it is fixed.</span>
+          </li>
+          <li>
+            <span class="name">close()</span>
+            <span class="type">void</span>
+            <span class="description">Closes this sidebar, unless it is fixed.</span>
+          </li>
+          <li>
+            <span class="name">addGlobalStylesForBody()</span>
+            <span class="type">void</span>
+            <span class="description">Adds the global styles exemplified in usage to &lt;head&gt; with the right breakpoints and sizes set accordingly.</span>
+          </li>
+          <li>
+            <span class="name">removeGlobalStyles()</span>
+            <span class="type">void</span>
+            <span class="description">Removes any global styles added by addGlobalStylesForBody()</span>
+          </li>
+        </template>
+      </koppar-doc-api>
+      <koppar-doc-api type="Properties">
+        <template>
+          <li>
+            <span class="name">closeOnNavigation</span>
+            <span class="type">Boolean</span>
+            <span class="description">Set to true if this sidebar should close when navigation occurs (listens to 'location-changed' on window).</span>
+            <span class="meta">default: true</span>
+          </li>
+          <li>
+            <span class="name">responsiveBreakpoint</span>
+            <span class="type">Number</span>
+            <span class="description">The width after which this.fixed = true</span>
+            <span class="meta">default: 800</span>
+          </li>
+          <li>
+            <span class="name">mobileBreakpointWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The width up to, and including, which is considered mobile sizes.</span>
+            <span class="meta">default: 800</span>
+          </li>
+          <li>
+            <span class="name">tabletBreakpointWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The width up to, and including, which is considered tablet sizes.</span>
+            <span class="meta">default: 1200</span>
+          </li>
+          <li>
+            <span class="name">mobileWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The max width of the sidebar pane on mobile sizes (width <= this.mobileBreakPointWidth)</span>
+            <span class="meta">default: 280</span>
+          </li>
+          <li>
+            <span class="name">tabletWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The max width of the sidebar pane on tablet sizes (this.tabletBreakpointWidth >= width > this.mobileBreakPointWidth)</span>
+            <span class="meta">default: 280</span>
+          </li>
+          <li>
+            <span class="name">desktopWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The max width of the sidebar pane on desktop sizes (width > this.tabletBreakpointWidth)</span>
+            <span class="meta">default: 320</span>
+          </li>
+          <li>
+            <span class="name">widthStep</span>
+            <span class="type">Number</span>
+            <span class="description">The increment to use for subtracting from the screen width on smaller devices.</span>
+            <span class="meta">default: 56</span>
+          </li>
+          <li>
+            <span class="name">ifOpenThenCloseAfter</span>
+            <span class="type">Number</span>
+            <span class="description">The number of pixels after which the sidebar closes after being dragged when it was opened initially.</span>
+            <span class="meta">default: 24</span>
+          </li>
+          <li>
+            <span class="name">ifClosedThenOpenAfter</span>
+            <span class="type">Number</span>
+            <span class="description">The number of pixels after which the sidebar opens after being dragged when it was closed initially.</span>
+            <span class="meta">default: 24</span>
+          </li>
+          <li>
+            <span class="name">automaticallyAddGlobalStyles</span>
+            <span class="type">Boolean</span>
+            <span class="description">Set if this sidebar automatically calls this.addGlobalStylesForBody()</span>
+            <span class="meta">default: true</span>
+          </li>
+          <li>
+            <span class="name">paneWidth</span>
+            <span class="type">Number</span>
+            <span class="description">The current width of the sidebar pane.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+          <li>
+            <span class="name">rendering</span>
+            <span class="type">Boolean</span>
+            <span class="description">True when this sidebar is in a rendering loop.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+          <li>
+            <span class="name">sliding</span>
+            <span class="type">Boolean</span>
+            <span class="description">True when a user is sliding this sidebar.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+          <li>
+            <span class="name">fixed</span>
+            <span class="type">Boolean</span>
+            <span class="description">True when this sidebar is fixed to the left of the viewport.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+          <li>
+            <span class="name">opened</span>
+            <span class="type">Boolean</span>
+            <span class="description">True when this sidebar is opened, but not fixed.</span>
+            <span class="meta">readonly, notifies</span>
           </li>
         </template>
       </koppar-doc-api>
@@ -38,7 +192,43 @@
           <script type="text/markdown">
           A quick example of `koppar-sidebar` is:
           ```html
-          <koppar-sidebar></koppar-sidebar>
+          <koppar-sidebar>
+            <koppar-sidebar-header></koppar-sidebar-header>
+            <koppar-sidebar-entry href="/" icon="rocket" text="Home"></koppar-sidebar-entry>
+            <koppar-sidebar-entry href="/a/" icon="code-tags" text="A sidebar entry!">
+              <koppar-sidebar-entry href="/a/b/" select-route="/a/b/*" text="A nested sidebar entry!"></koppar-sidebar-entry>
+              <koppar-sidebar-entry href="/a/c/" select-route="/a/c/*" text="Another nested entry!"></koppar-sidebar-entry>
+            </koppar-sidebar-entry>
+          </koppar-sidebar>
+          ```
+
+          To properly use the fixed feature of `koppar-sidebar`, however, it is recommended to add some global styles:
+          ```css
+          body {
+            margin: 0; padding: 0;
+            width: 100%;
+            overflow-x: hidden;
+            box-sizing: border-box;
+          }
+          @media (min-width: 801px) and (min-width: 1201px) {
+            body {
+              padding-left: 320px;
+            }
+          }
+          @media (min-width: 801px) and (min-width: 801px) and (max-width: 1200px) {
+            body {
+              padding-left: 280px;
+            }
+          }
+          @media (min-width: 801px) and (max-width: 800px) {
+            body {
+              padding-left: 280px;
+            }
+          }
+          ```
+          The global styles can also be added by calling `addGlobalStylesForBody` (Which is done automatically if either the `automaticallyAddGlobalStyles` property or the attribute `automatically-add-global-styles` is set to true):
+          ```javascript
+            document.getElementById("sidebar").addGlobalStylesForBody();
           ```
           </script>
         </template>
