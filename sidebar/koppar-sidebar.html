@@ -1,325 +1,113 @@
 <link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../behaviors/koppar-sidebar-behavior.html">
+<link rel="import" href="../behaviors/koppar-sidebar-sliding-behavior.html">
 
-<dom-module id="koppar-sidebar">
+<dom-module is="koppar-sidebar">
   <template>
     <style>
       :host {
-        display: block;
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
-        z-index:10000;
         pointer-events: none;
-        opacity: 1;
+        --sidebar-pane-width: 320px;
+        --sidebar-pane-background: white;
 
-        --entry-selected-color: blue;
+        --sidebar-open-background-opacity: 0.25;
+        z-index: 10000;
       }
-      :host([opened]) {
-        pointer-events: all;
-      }
-      :host .pane {
-        position: absolute;
-        top: 0; left: 0; bottom: 0;
-        width: 320px;
-        background: white;
-        -webkit-overflow-scrolling: touch;
-      }
-      :host .pane-content {
-        min-height: 100%;
-        padding-bottom: 96px;
-        box-sizing: border-box;
-        position: relative;
-      }
-      :host .shadow {
-        position: absolute;
-        top: 0; left: 0; width: 100vw; height: 100vh;
-        background: rgba(0,0,0,0.25);
-      }
-      :host([fixed]) {
-        z-index: 0;
-        width: 320px;
-        pointer-events: all;
-      }
-      :host([fixed]) .shadow {
+
+      :host .background {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
         pointer-events: none;
-      }
-      :host([fixed]) .pane::after {
-        content: "";
-        position: absolute;
-        top: 0; right: 0; bottom: 0; width: 1px;
-        background: rgba(0,0,0,0.12);
-      }
-      /* Setup states */
-      :host .pane {
-        will-change: transform;
-        transform: translate3d(-105vw, 0, 0);
-      }
-      :host .shadow {
-        will-change: opacity;
+
         opacity: 0;
-      }
-      :host([opened]) .pane,
-      :host([fixed]) .pane {
-        transform: translate3d(0, 0, 0);
-      }
-      :host([opened]) .shadow {
-        opacity: 1;
-      }
-      :host([fixed]) .shadow {
-        opacity: 0;
-      }
-      :host([shadow]) .pane {
-        box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-      }
-      :host([fixed]) .pane {
-        transition-property: none;
-      }
-      :host([opened][fixed]) .pane {
-        box-shadow: none;
-        transition-property: box-shadow;
-      }
-      /* Handle transitions */
-      :host .pane {
-        transition-property: transform, box-shadow;
-      }
-      :host .shadow {
+
         transition-property: opacity;
       }
-      :host .pane, :host .shadow {
-        transition-duration: 0.25s;
+
+      :host .pane {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: var(--sidebar-pane-width);
+        background: var(--sidebar-pane-background);
+        -webkit-overflow-scrolling: touch;
+
+        transition-property: transform;
+        transform: none;
+        pointer-events: all;
       }
-      :host([opened]) .shadow, :host([opened]) .pane {
-        transition-timing-function: cubic-bezier(0.39, 0.005, 0.185, 1);
+
+      :host .pane::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; bottom: 0; right: 0;
+        background: inherit;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+        pointer-events: none;
+
+        transition-property: opacity;
+        opacity: 0;
       }
-      :host .shadow, :host .pane {
+      :host .background::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        pointer-events: none;
+        background: black;
+        opacity: var(--sidebar-open-background-opacity);
+      }
+
+      :host .background,
+      :host .pane,
+      :host .pane::before {
+        transition-duration: 225ms;
         transition-timing-function: cubic-bezier(0.61, 0.005, 0.815, 1);
       }
+
+      :host([sliding]) .background,
       :host([sliding]) .pane,
-      :host([sliding]) .shadow {
-        transition-duration: 0s;
+      :host([sliding]) .pane::before {
+        transition: none;
       }
+
+      :host([opened]) .background,
+      :host([opened]) .pane,
+      :host([opened]) .pane::before {
+        transition-timing-function: cubic-bezier(0.39, 0.005, 0.185, 1);
+      }
+
+      :host(:not([fixed]):not([opened])) .pane {
+        transform: translate3d(calc(-var(--sidebar-pane-width) - 10px), 0, 0);
+      }
+
+      :host(:not([fixed])) .pane::before {
+        opacity: 1;
+      }
+
+      :host([opened]:not([fixed])) .background {
+        opacity: 1;
+        pointer-events: all;
+      }
+
     </style>
-    <div id="closer" class="shadow"></div>
+    <div id="closer" class="background"></div>
     <div id="pane" class="pane">
-      <div class="pane-content">
-        <content></content>
-      </div>
+      <content></content>
     </div>
-    <!---->
   </template>
   <script>
     Polymer({
       is: "koppar-sidebar",
-      hostAttributes: {
-        resolved: true
-      },
-      properties: {
-        maxMobileWidth: {
-          type: Number,
-          value: 600
-        },
-        fixWidth: {
-          type: Number,
-          value: 1200
-        },
-        responsiveWidth: {
-          observer: "_responsiveWidthChanged"
-        },
-        sliding: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        fixed: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        shadow: {
-          type: Boolean,
-          value: true,
-          reflectToAttribute: true
-        },
-        opened: {
-          type: Boolean,
-          value: false,
-          reflectToAttribute: true
-        },
-        position: {
-          type: Number,
-          value: 0,
-          readonly: true
-        }
-      },
-      ready: function ready() {
-        this._render = this._render.bind(this);
-      },
-      attached: function attached() {
-        this.listen(window, "resize", "onWindowResized");
-        this.listen(window, "touchstart", "onTouchStart");
-        this.listen(window, "touchmove", "onTouchMove");
-        this.listen(window, "touchend", "onTouchEnd");
-        this.listen(window, "location-changed", "onNavigate");
-        this.async(this.updateResponsiveWidth);
-      },
-      detached: function detached() {
-        this.unlisten(window, "resize", "onWindowResized");
-        this.unlisten(window, "touchstart", "onTouchStart");
-        this.unlisten(window, "touchmove", "onTouchMove");
-        this.unlisten(window, "touchend", "onTouchEnd");
-        this.unlisten(window, "location-changed", "onNavigate");
-      },
+      behaviors: [
+        Koppar.SidebarBehavior,
+        Koppar.SlidingSidebarBehavior
+      ],
       listeners: {
-        "closer.tap": "handleCloserTap",
-        "closer.touchmove": "_preventScroll"
+        "closer.tap": "close"
       },
-      _preventScroll: function(evt) {
-        evt.preventDefault();
-        evt.stopImmediatePropagation();
-
-        this.onTouchMove(evt);
-      },
-      fix: function fix() {
-        if(this.fixed) return;
-        this.fixed = true;
-        this.opened = false;
-        this.shadow = false;
-        this.async(function(){
-          this.opened = false;
-        }, 250);
-        this.fire("fix");
-      },
-      unfix: function unfix() {
-        if(!this.fixed) return;
-        this.fixed = false;
-        this.opened = false;
-        this.async(function(){
-          this.shadow = true;
-        }, 250);
-        this.fire("unfix");
-      },
-      open: function open() {
-        if(this.fixed) return;
-        if(this.opened) return;
-        this.opened = true;
-        this.position = this.responsiveWidth;
-        this.fire("open");
-      },
-      close: function close() {
-        if(this.fixed) return;
-        if(!this.opened) return;
-        this.opened = false;
-        this.position = 0;
-        this.fire("close");
-      },
-      updateResponsiveWidth: function() {
-        var viewportWidth = window.innerWidth || 320;
-        var isMobile = viewportWidth < this.maxMobileWidth;
-        var isFixed = viewportWidth > this.fixWidth;
-        var maxWidth = isMobile ? 280 : 320;
-        this.responsiveWidth = Math.min(maxWidth, viewportWidth);
-        
-        if(viewportWidth > this.fixWidth) {
-          this.fix();
-        } else {
-          this.unfix();
-        }
-        this.position = this.opened ? this.responsiveWidth : 0;
-      },
-      _responsiveWidthChanged: function() {
-        this.$.pane.style.width = this.responsiveWidth + "px";
-      },
-      onWindowResized: function() {
-        this.async(this.updateResponsiveWidth);
-      },
-      handleCloserTap: function handleCloserTap(evt) {
-        this.close();
-      },
-      onNavigate: function() {
-        this.close();
-      },
-      clamp: function(t) { return Math.max(Math.min(1, t), 0); },
-      easeOutQuad: function(t) { return t*(2-t) },
-      _render: function() {
-        if(!this.sliding) return;
-        requestAnimationFrame(this._render);
-        var initialSlideInTime = 125;
-        var initialSlideInDelta =
-          1 - this.easeOutQuad(
-            this.clamp(
-              (this._slideStartTimestamp + initialSlideInTime - Date.now()) / initialSlideInTime
-            )
-          );
-        var relativeX = (this._targetPosition) - this.position;
-        this.position += relativeX * initialSlideInDelta;
-        this.position = Math.min(this.responsiveWidth, this.position);
-        this.translate3d((this.position - this.responsiveWidth) + "px", "0", "0", this.$.pane);
-        this.$.closer.style.opacity = this.position / this.responsiveWidth;
-      },
-      _resetPosition: function() {
-        const ifOpenThenCloseAfter = 25;
-        const ifClosedThenOpenAfter = 25;
-        this.sliding = false;
-        this.slidingIn = false;
-        this.slidingOut = false;
-        this.$.pane.style.transform = null;
-        this.$.closer.style.opacity = null;
-        if(this.opened) {
-          if(this._targetPosition < this.responsiveWidth - ifOpenThenCloseAfter) this.close();
-        } else {
-          if(this._targetPosition > ifClosedThenOpenAfter) this.open();
-        }
-      },
-      _canSlide: false,
-      _startTouchX: null,
-      _startTouchY: null,
-      _slideStartTimestamp: -1,
-      _startTimestamp: -1,
-      onTouchStart: function(evt) {
-        if(evt.touches.length > 1) return;
-        this._canSlide = true;
-        this._startTouchX = evt.touches[0].clientX;
-        this._startTouchY = evt.touches[0].clientY;
-        this._startTimestamp = Date.now();
-      },
-      onTouchMove: function(evt) {
-        if(evt.changedTouches.length > 1) return; //Cancel if we are touching more than once
-        if(!(this.sliding || this._canSlide)) {
-          if(this.opened && evt.cancelable) {
-            evt.preventDefault();
-          }
-          return;
-        }
-        var maximumAngle = Math.PI / 6; //180 / 8 = >15 degrees
-        var minLength = 25;
-        var maxTimeSinceStart = 200;
-        var squareMinLength = minLength * minLength;
-        var deltaX = evt.changedTouches.item(0).clientX - this._startTouchX;
-        var deltaY = evt.changedTouches.item(0).clientY - this._startTouchY;
-        if(!this.sliding && this._canSlide) {
-          var angle = Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX)));
-          var squareLength = deltaX * deltaX + deltaY * deltaY;
-          if(squareLength > 5 && angle > maximumAngle) {
-            this._canSlide = false;
-            return;
-          }
-          if(this.opened && deltaX > 0) return;
-          if(!this.opened && deltaX < 0) return;
-          if(squareLength < squareMinLength) return;
-          if(Date.now() - this._startTimestamp > maxTimeSinceStart) return;
-          this.sliding = true;
-          this.slidingIn = !this.opened;
-          this.slidingOut = this.opened;
-          this._slideStartTimestamp = Date.now();
-          requestAnimationFrame(this._render);
-          //Check if we should slide
-        }
-        evt.preventDefault();
-        var offset = this.slidingOut ? this.responsiveWidth - this._startTouchX : 0;
-        this._targetPosition = evt.changedTouches.item(0).clientX + offset;
-      },
-      onTouchEnd: function(evt) {
-        if(!this.sliding) return;
-        this._resetPosition();
+      created: function() {
+        this.removeAttribute("unresolved");
       }
     })
   </script>

@@ -1,0 +1,99 @@
+<script>
+  window.Koppar = window.Koppar || {};
+  window.Koppar.SidebarBehavior = {
+    properties: {
+      closeOnNavigation: {
+        type: Boolean,
+        value: true
+      },
+      fixed: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+        notify: true,
+        readonly: true,
+        observer: "__callFixedEvents"
+      },
+      opened: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+        notify: true,
+        readonly: true,
+        observer: "__callOpenedEvents"
+      },
+
+      /* Tells us when this sidebar should fix */
+      responsiveBreakpoint: {
+        type: Number,
+        value: 600
+      }
+    },
+
+    attached: function() {
+      this.listen(window, "resize", "__onWindowResized__responsive");
+      this.listen(window, "location-changed", "__onNavigation");
+      this.__onWindowResized__responsive();
+    },
+
+    detached: function() {
+      this.unlisten(window, "resize", "__onWindowResized__responsive");
+      this.unlisten(window, "touchmove", "_preventScroll");
+      this.unlisten(window, "location-changed", "__onNavigation");
+    },
+
+    __onWindowResized__responsive: function() {
+      var windowWidth = window.innerWidth;
+
+      if(windowWidth > this.responsiveBreakpoint) {
+        this.fix();
+      } else {
+        this.unfix();
+      }
+    },
+    
+    __onNavigation: function() {
+      if(!this.closeOnNavigation) return;
+
+      this.close();
+    },
+
+    fix: function() {
+      if(this.fixed) return;
+
+      this.fixed = true;
+      this.opened = false;
+    },
+
+    unfix: function() {
+      if(!this.fixed) return;
+
+      this.fixed = false;
+      this.opened = false;
+    },
+
+    open: function() {
+      if(this.fixed) return;
+      if(this.opened) return;
+
+      this.opened = true;
+    },
+
+    close: function() {
+      if(this.fixed) return;
+      if(!this.opened) return;
+
+      this.opened = false;
+    },
+
+    __callFixedEvents: function(fixed) {
+      if(fixed) this.fire("fix");
+      else this.fire("unfix");
+    },
+
+    __callOpenedEvents: function(opened) {
+      if(opened) this.fire("opened");
+      else this.fire("close");
+    }
+  };
+</script>

@@ -1,0 +1,210 @@
+<script>
+  window.Koppar = window.Koppar || {};
+  window.Koppar.SlidingSidebarBehavior = {
+    properties: {
+      paneWidth: {
+        type: Number,
+        notify: true
+      },
+
+      /* Tells us when this sidebar use a max width, instead of width = (window_width - widthStep) */
+      mobileBreakpointWidth: {
+        type: Number,
+        value: 600
+      },
+
+      tabletBreakpointWidth: {
+        type: Number,
+        value: 1000
+      },
+
+      mobileWidth: {
+        type: Number,
+        value: 280
+      },
+
+      tabletWidth: {
+        type: Number,
+        value: 280
+      },
+
+      desktopWidth: {
+        type: Number,
+        value: 320
+      },
+
+      widthStep: {
+        type: Number,
+        value: 56
+      },
+
+      ifOpenThenCloseAfter: {
+        type: Number,
+        value: 24
+      },
+
+      ifClosedThenOpenAfter: {
+        type: Number,
+        value: 24
+      },
+
+      rendering: Boolean,
+      sliding: {
+        type: Boolean,
+        reflectToAttribute: true,
+        notify: true
+      },
+      _slidingIn: Boolean,
+      _slidingOut: Boolean,
+      _prepareSlide: Boolean
+    },
+
+    created: function() {
+      this._boundRender = this._render.bind(this);
+    },
+
+    attached: function() {
+      this.listen(window, "resize", "__onWindowResized__slide");
+      this.listen(window, "touchstart", "__onTouchStart");
+      this.listen(window, "touchmove", "__onTouchMove");
+      this.listen(window, "touchend", "__onTouchEnd");
+      this.__onWindowResized__slide();
+    },
+
+    detached: function() {
+      this.unlisten(window, "resize", "__onWindowResized__slide");
+      this.unlisten(window, "touchstart", "__onTouchStart");
+      this.unlisten(window, "touchmove", "__onTouchMove");
+      this.unlisten(window, "touchend", "__onTouchEnd");
+    },
+
+    listeners: {
+      "touchmove": "_preventScroll"
+    },
+    
+    _preventScroll: function(evt) {
+      evt.preventDefault();
+      evt.stopImmediatePropagation();
+      
+      this.__onTouchMove(evt);
+    },
+
+    clamp: function(t) { return Math.max(Math.min(1, t), 0); },
+    easeOutQuad: function(t) { return t*(2-t) },
+    _render: function() {
+      if(!this.sliding) return;
+      requestAnimationFrame(this._boundRender);
+
+      
+      var initialSlideInTime = 125;
+      var initialSlideInDelta =
+        1 - this.easeOutQuad(
+          this.clamp(
+            (this._slideStartTimestamp + initialSlideInTime - Date.now()) / initialSlideInTime
+          )
+        );
+      var relativeX = (this._slideTargetPosition) - this._slidePosition;
+      this._slidePosition += relativeX * initialSlideInDelta;
+      this._slidePosition = Math.min(this.paneWidth, this._slidePosition);
+
+      this.translate3d((this._slidePosition - this.paneWidth) + "px", "0", "0", this.$.pane);
+      this.$.closer.style.opacity = this._slidePosition / this.paneWidth;
+    },
+
+    _calculatePaneWidth: function(windowWidth) {
+      if(!windowWidth) windowWidth = 320;
+
+      if(windowWidth < this.mobileBreakpointWidth) {
+        return Math.min(windowWidth - this.widthStep, this.mobileWidth);
+      } else if(windowWidth < this.tabletBreakpointWidth) { 
+        return Math.min(windowWidth - this.widthStep, this.tabletWidth);
+      } else {
+        return Math.min(windowWidth - this.widthStep, this.desktopWidth);
+      }
+    },
+
+    _shouldStartSliding: function(evt) {
+      var maximumAngle = Math.PI / 6; //180 / 8 = >15 degrees
+      var minLength = 25;
+      var maxTimeSinceStart = 200;
+      var squareMinLength = minLength * minLength;
+      var deltaX = evt.changedTouches.item(0).clientX - this._startTouchX;
+      var deltaY = evt.changedTouches.item(0).clientY - this._startTouchY;
+
+      
+      var angle = Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX)));
+      var squareLength = deltaX * deltaX + deltaY * deltaY;
+      if(squareLength > 5 && angle > maximumAngle) {
+        this._prepareSlide = false;
+        return false;
+      }
+      if(this.opened && deltaX > 0) return false;
+      if(!this.opened && deltaX < 0) return false;
+      if(squareLength < squareMinLength) return false;
+      if(Date.now() - this._startTimestamp > maxTimeSinceStart) return false;
+      return true;
+    },
+    
+    __onWindowResized__slide: function() {
+      this.async(function(){
+        var windowWidth = window.innerWidth;
+
+        this.paneWidth = this._calculatePaneWidth(windowWidth);
+        this.$.pane.style.width = this.paneWidth + "px";
+      });
+    },
+
+    _startTimestamp: 0,
+    _startTouchX: 0,
+    _startTouchY: 0,
+    __onTouchStart: function(evt) {
+      if(this.fixed) return;
+
+      this._prepareSlide = true;
+      this._startTouchX = evt.touches[0].clientX;
+      this._startTouchY = evt.touches[0].clientY;
+      this._startTimestamp = Date.now();
+    },
+
+    __onTouchEnd: function(evt) {
+      if(!this.sliding) return;
+
+      this.sliding = false;
+      this._slidingIn = false;
+      this._slidingOut = false;
+      this.$.pane.style.transform = null;
+      this.$.closer.style.opacity = null;
+
+      if(this.opened) {
+        if(this._slideTargetPosition < this.paneWidth - this.ifOpenThenCloseAfter) this.close();
+      } else {
+        if(this._slideTargetPosition > this.ifClosedThenOpenAfter) this.open();
+      }
+    },
+
+    _slidePosition: 0,
+    _slideTargetPosition: 0,
+    _slideOffset: 0,
+    _slideStartTimestamp: 0,
+    __onTouchMove: function(evt) {
+      if(this.fixed) return;
+      
+      if(evt.changedTouches.length > 1) return; //Cancel if we are touching more than once
+      if(!this.sliding && !this._prepareSlide) return;
+
+      if(!this.sliding) {
+        if(!this._shouldStartSliding(evt)) return;
+        this.sliding = true;
+        this._prepareSlide = false;
+        this._slidingIn = !this.opened;
+        this._slidingOut = this.opened;
+        this._slideStartTimestamp = Date.now();
+        this._slidePosition = this.opened ? this.paneWidth : -10;
+        this._slideOffset = this._slidingOut ? this.paneWidth - this._startTouchX : 0;
+        requestAnimationFrame(this._boundRender);
+      }
+      evt.preventDefault();
+      this._slideTargetPosition = evt.changedTouches.item(0).clientX + this._slideOffset;
+    }
+  };
+</script>
