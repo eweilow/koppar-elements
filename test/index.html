@@ -15,12 +15,6 @@
         overflow-y: scroll;
       }
 
-      .nav {
-        padding: 16px;
-        line-height: 16px;
-        box-sizing: border-box;
-      }
-
       body > koppar-router {
         box-sizing: border-box;
         display: block;
@@ -37,6 +31,16 @@
 
       .flex-grid > koppar-element-card {
         margin: 8px;
+      }
+
+      @media(max-width: 600px) {
+        .flex-grid {
+          padding: 4px;
+        }
+
+        .flex-grid > koppar-element-card {
+          margin: 4px;
+        }
       }
 
     </style>
