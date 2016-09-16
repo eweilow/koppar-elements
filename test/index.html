@@ -33,6 +33,10 @@
         margin: 8px;
       }
 
+      koppar-router {
+        min-height: 100vh;
+      }
+
       @media(max-width: 600px) {
         .flex-grid {
           padding: 4px;
@@ -79,10 +83,12 @@
       <koppar-sidebar-entry href="/elements/" icon="code-tags" text="Elements">
         <koppar-sidebar-entry href="/elements/navbar/" select-route="/elements/navbar/*" text="Navbar elements"></koppar-sidebar-entry>
         <koppar-sidebar-entry href="/elements/sidebar/" select-route="/elements/sidebar/*" text="Sidebar elements"></koppar-sidebar-entry>
+        <koppar-sidebar-entry href="/elements/router/" select-route="/elements/router/*" text="Router elements"></koppar-sidebar-entry>
+        <koppar-sidebar-entry href="/elements/utilities/" select-route="/elements/utilities/*" text="Utility elements"></koppar-sidebar-entry>
       </koppar-sidebar-entry>
     </koppar-sidebar>
 
-    <koppar-router route="/" transition="fade" greedy> <!-- greedy makes this router only use one view -->
+    <koppar-router route="/" transition="slide" greedy> <!-- greedy makes this router only use one view -->
       <koppar-view route="/" order="1">
         <template>
           <koppar-navbar title="koppar-elements">
@@ -92,7 +98,7 @@
         </template>
       </koppar-view>
       
-      <koppar-view route="/elements" order="2"> <!-- lazy matches EVERYTHING after -->
+      <koppar-view route="/elements" order="1"> <!-- lazy matches EVERYTHING after -->
         <template>
           <koppar-navbar title="Elements">
             <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
@@ -104,13 +110,13 @@
         </template>
       </koppar-view>
 
-      <koppar-view route="/elements/navbar" lazy order="3"> <!-- lazy matches EVERYTHING after -->
+      <koppar-view route="/elements/navbar" lazy order="1"> <!-- lazy matches EVERYTHING after -->
         <template>
           <koppar-navbar title="Navbar Elements">
             <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
           </koppar-navbar>
-          <koppar-router route="/elements/navbar" transition="fade" greedy>
-            <koppar-view route="/" order="1">
+          <koppar-router route="/elements/navbar" transition="slide" greedy>
+            <koppar-view route="/" order="2">
               <template>
                 <div class="flex-grid">
                   <koppar-element-card title="koppar-navbar" href="/elements/navbar/koppar-navbar/">The navbar wrapper</koppar-element-card>
@@ -138,13 +144,13 @@
         </template>
       </koppar-view>
 
-      <koppar-view route="/elements/sidebar" lazy order="4"> <!-- lazy matches EVERYTHING after -->
+      <koppar-view route="/elements/sidebar" lazy order="1"> <!-- lazy matches EVERYTHING after -->
         <template>
           <koppar-navbar title="Sidebar Elements">
             <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
           </koppar-navbar>
-          <koppar-router route="/elements/sidebar" transition="fade" greedy>
-            <koppar-view route="/" order="1">
+          <koppar-router route="/elements/sidebar" transition="slide" greedy>
+            <koppar-view route="/" order="2">
               <template>
                 <div class="flex-grid">
                   <koppar-element-card title="koppar-sidebar" href="/elements/sidebar/koppar-sidebar/">The sidebar element</koppar-element-card>
@@ -158,19 +164,70 @@
                 <koppar-sidebar-doc></koppar-sidebar-doc>
               </template>
             </koppar-view>
-            <koppar-view route="/koppar-sidebar-entry" order="3">
+            <koppar-view route="/koppar-sidebar-entry" order="2">
               <template>
                 <koppar-sidebar-entry-doc></koppar-sidebar-entry-doc>
               </template>
             </koppar-view>
-            <koppar-view route="/koppar-sidebar-header" order="3">
+            <koppar-view route="/koppar-sidebar-header" order="2">
               <template>
                 <koppar-sidebar-header-doc></koppar-sidebar-header-doc>
               </template>
             </koppar-view>
-            <koppar-view route="/koppar-sidebar-opener" order="4">
+          </koppar-router>
+        </template>
+      </koppar-view>
+
+      <koppar-view route="/elements/router" lazy order="1"> <!-- lazy matches EVERYTHING after -->
+        <template>
+          <koppar-navbar title="Router Elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <koppar-router route="/elements/router" transition="slide" greedy>
+            <koppar-view route="/" order="2">
               <template>
-                <h1>koppar-sidebar-opener</h1>
+                <div class="flex-grid">
+                  <koppar-element-card title="koppar-router" href="/elements/router/koppar-router/">The router element</koppar-element-card>
+                  <koppar-element-card title="koppar-view" href="/elements/router/koppar-view/">The view element</koppar-element-card>
+                </div>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-router" order="2">
+              <template>
+                <koppar-router-doc></koppar-router-doc>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-view" order="2">
+              <template>
+                <koppar-view-doc></koppar-view-doc>
+              </template>
+            </koppar-view>
+          </koppar-router>
+        </template>
+      </koppar-view>
+
+      <koppar-view route="/elements/utilities" lazy order="1"> <!-- lazy matches EVERYTHING after -->
+        <template>
+          <koppar-navbar title="Utility Elements">
+            <koppar-sidebar-opener sidebar-selector="#main-sidebar"></koppar-sidebar-opener>
+          </koppar-navbar>
+          <koppar-router route="/elements/utilities" transition="slide" greedy>
+            <koppar-view route="/" order="2">
+              <template>
+                <div class="flex-grid">
+                  <koppar-element-card title="koppar-icon" href="/elements/utilities/koppar-icon/">An icon element</koppar-element-card>
+                  <koppar-element-card title="koppar-image" href="/elements/utilities/koppar-image/">An image element</koppar-element-card>
+                </div>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-icon" order="2">
+              <template>
+                <koppar-icon-doc></koppar-icon-doc>
+              </template>
+            </koppar-view>
+            <koppar-view route="/koppar-image" order="2">
+              <template>
+                <koppar-image-doc></koppar-image-doc>
               </template>
             </koppar-view>
           </koppar-router>

@@ -1,0 +1,77 @@
+<link rel="import" href="../../../polymer/polymer.html">
+
+<dom-module is="koppar-icon-doc">
+  <template>
+    <style>
+      :host {
+        
+      }
+    </style>
+    <koppar-element-documentation 
+      title="koppar-icon"
+      source="https://github.com/eweilow/koppar-elements/blob/master/path/koppar-icon.html">
+      <koppar-doc-description>
+        <template>The koppar-icon element provides ...</template>
+      </koppar-doc-description>
+      <koppar-doc-styling>
+        <template>
+          <li>
+            <span class="name">--size</span>
+            <span class="type">size (px)</span>
+            <span class="description">Defines the size of this icon.</span>
+            <span class="meta">default: 24px</span>
+          </li>
+        </template>
+      </koppar-doc-styling>
+      <koppar-doc-api>
+        <template>
+          <li>
+            <span class="name">name</span>
+            <span class="type">String</span>
+            <span class="description">The name of the <a href="https://materialdesignicons.com/" target="_blank">Material Design Icons</a> icon to show as this icon.</span>
+            <span class="meta">default: null</span>
+          </li>
+          <li>
+            <span class="name">defaultsTo</span>
+            <span class="type">String</span>
+            <span class="description">The geometric shape of this icon to default to when this.name is not defined..</span>
+            <span class="meta">valid: circle, square</span>
+          </li>
+        </template>
+      </koppar-doc-api>
+      <koppar-doc-usage>
+        <template>
+          A quick example of `koppar-icon` is:
+          ```html
+          <koppar-icon name="rocket"></koppar-icon>
+          ```
+          The defaultsTo property is useful for custom elements like shown below. If my-element isn't provided an icon, the inner icon shows a default circle.
+          ```html
+          <dom-module id="my-element">
+            <template>
+              <koppar-icon name="{{icon}}" defaults-to="circle"></koppar-icon>
+            </template>
+            <script>
+              Polymer({
+                is: "my-element",
+                properties: {
+                  icon: String
+                }
+              })
+            </script>
+          </dom-module>
+          ```
+        </template>
+      </koppar-doc-usage>
+    </koppar-element-documentation>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-icon-doc",
+      created: function() {
+        this.removeAttribute("unresolved");
+      }
+    })
+  </script>
+</dom-module>
+
