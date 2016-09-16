@@ -1,0 +1,77 @@
+<link rel="import" href="../../../polymer/polymer.html">
+
+<dom-module is="koppar-image-doc">
+  <template>
+    <style>
+      :host {
+        
+      }
+    </style>
+    <koppar-element-documentation 
+      title="koppar-image"
+      source="https://github.com/eweilow/koppar-elements/blob/master/path/koppar-image.html">
+      <koppar-doc-description>
+        <template>The koppar-image element provides ...</template>
+      </koppar-doc-description>
+      <koppar-doc-api>
+        <template>
+          <li>
+            <span class="name">src</span>
+            <span class="type">String</span>
+            <span class="description">The image source of this element.</span>
+            <span class="meta"></span>
+          </li>
+          <li>
+            <span class="name">milliseconds</span>
+            <span class="type">Number</span>
+            <span class="description">The duration of the entry animation.</span>
+            <span class="meta"></span>
+          </li>
+          <li>
+            <span class="name">zoom</span>
+            <span class="type">Boolean</span>
+            <span class="description">Set if the element should zoom in the image when loaded.</span>
+            <span class="meta"></span>
+          </li>
+          <li>
+            <span class="name">round</span>
+            <span class="type">Boolean</span>
+            <span class="description">Set if this element gets border-radius: 50%</span>
+            <span class="meta"></span>
+          </li>
+          <li>
+            <span class="name">loaded</span>
+            <span class="type">Boolean</span>
+            <span class="description">The text of this element.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+          <li>
+            <span class="name">transition</span>
+            <span class="type">Boolean</span>
+            <span class="description">The text of this element.</span>
+            <span class="meta">readonly, notifies</span>
+          </li>
+        </template>
+      </koppar-doc-api>
+      <koppar-doc-usage>
+        <template>
+          <script type="text/markdown">
+          A quick example of `koppar-image` is:
+          ```html
+          <koppar-image src="image.jpg"></koppar-image>
+          ```
+          </script>
+        </template>
+      </koppar-doc-usage>
+    </koppar-element-documentation>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-image-doc",
+      created: function() {
+        this.removeAttribute("unresolved");
+      }
+    })
+  </script>
+</dom-module>
+
