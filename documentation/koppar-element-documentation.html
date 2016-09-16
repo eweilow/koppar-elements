@@ -326,8 +326,10 @@
 
           var dummy = document.createElement("div");
           dummy.appendChild(templateInstance.root);
+          
+          var text = dummy.querySelector("script").text;
+          text = text.replace("&nbsp;", "")
 
-          var text = dummy.innerHTML;
           text = this.$.insertion.unindent(text);
           this.$.insertion.markdown = text;
         }
