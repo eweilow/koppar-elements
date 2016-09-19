@@ -11,7 +11,6 @@ addons:
     - google-chrome
     packages:
     - google-chrome-stable
-    
 before_script:
 - npm install -g gulp bower web-component-tester
 - npm install
@@ -20,4 +19,8 @@ script:
 - gulp
 - gulp lint
 - xvfb-run wct --skip-plugin sauce --root ./build/
-#- wct --skip-plugin local --root ./build/
+- wct --skip-plugin local --root ./build/
+env:
+  global:
+  - secure: F9eX86EkutMzuBP6tDLg8s0I7C8PgqifxUpYCuPZcdbeuUCU9rTXI64JbSpwJYqHc2JCkIzbCS8FSBzG+nNQ/V7ZiKv2XhjnzlipsvxlwSosT2Vlj0QqYFkHKSS3d09r1d/ZEo5dw776VJ0jOEyVK3WVCdeP5SKTJyg+hsH8en+4y3E7kH79bcfqB6YtCdUDjicNNmZy5TBePzxciHVw+kDAyh1ffovUzK9PV1/iCQaB6tBM/WHndZlfSBA7qoWI5slOwJzGsMJ66ZVgFbK6Lgbmk3Bw+Jgof/V5pHOnODqhELDhvmsO01tmAYBmlIz6p7CRvHQ/PyXDRfBpsfnK8bedKlyTTyGUOv5S1ySwbK6cNO6Vn9rblTXL7Uc5x8DAGihY5R/1Nv4Ve7ChSIT77H8LD/WQO41mrSU+WbIUwniQdAfkHIPiTF9zjmgFJZgB6lJQo59iKeL//Jgiv3WYtQSw5Sfb3qCZVpGoayBZmc3p3MP82aVF8pThwZCv6lA8AdQLQeIztyRaJJ7bER6d2s+7dmDzsMHA+u4+Pi75FQoAZGAvPIf/FahS3vfmXnO/ckzughl/nwvpBcqeo/jGY56A5EcZ3s79pDSATt6OkpFIeJ+4iMf42Hlq5KcMwmC+0b0nKxn6Q9sJ7mHNo2WC/Uz3vJH2qd9Szw9+VuuqHMg=
+  - secure: Dxw9R7b9tUxd2xY+rDov1LX4u3nZ71+FnjV1faOyQRn8f+cY9P46HrrKGR3hgbYzBOcyRvAs9pvgxqotvHIysXIHrUHhwp7L/7yt3Dd0t21Fw3mxXyl3g5iZ1tnCF+57EC7DRZyHSChkU7P5IvKaDFX7z0T1IOfkI7WwlH72OoM+GYZ5TMyE34elfKLMc/AiRTFllLCGXEzNhzeFlVaXtAohYtnjEIrLwlCWhMCvgoBrzPMknTNiZavkJDYRZZxlFpHVDePEIdekpKScYh5LQvwp+ITqDwh04thtxSZ8wETK0I71iw0byYuTi8PzJfHBNHf4c7cNDcBq5R9ZV0rOFaEwf0rN4H1bFPLdNf9bHIsZSMnTo5H6abNVjS6XW3gn/pArmGj7Yal9r5oxKcWSB2pLV9cBMZLtaUtIfnhYIPBdsRJP0+dG3Kk5a4KE8mdArRDsz30l2ZoXfGVmqMjw14OW44gOnYKhOpNOMtYhpvBzI3OOEi1NQlrrLQtzSn/q1D31CdZRT6Qpk5GKjmEC8dX71ffHCzRJbfpTxcbn7T/V24MMroRdL5jfkVKYlgTYpPpBfoP6+c+KIv3lfqZyEXW6h+bxIOlTd086EeOWBrf2oBmrIRJpuhyJfCQ1K9dJUwZFZ5Eij1EoG1WsAwCn0OdSvQ8VL0h94r1q1eWDd98=
