@@ -19,5 +19,5 @@ before_script:
 script:
 - gulp
 - gulp lint
-- xvfb-run wct
-#- wct --skip-plugin local
+- xvfb-run wct --skip-plugin sauce --root ./build/
+#- wct --skip-plugin local --root ./build/
