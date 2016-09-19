@@ -1,0 +1,57 @@
+<link rel="import" href="../../../polymer/polymer.html">
+
+<dom-module is="koppar-view-doc">
+  <template>
+    <style>
+      :host {
+        
+      }
+    </style>
+    <koppar-element-documentation 
+      title="koppar-view"
+      source="https://github.com/eweilow/koppar-elements/blob/master/path/koppar-view.html">
+      <koppar-doc-description>
+        <template>The koppar-view element provides ...</template>
+      </koppar-doc-description>
+      <koppar-doc-styling>
+        <template>
+          <li>
+            <span class="name">--custom-variable</span>
+            <span class="type">size</span>
+            <span class="description">Defines a custom variable.</span>
+            <span class="meta">default: undefined</span>
+          </li>
+        </template>
+      </koppar-doc-styling>
+      <koppar-doc-api>
+        <template>
+          <li>
+            <span class="name">text</span>
+            <span class="type">String</span>
+            <span class="description">The text of this element.</span>
+            <span class="meta"></span>
+          </li>
+        </template>
+      </koppar-doc-api>
+      <koppar-doc-usage>
+        <template>
+          <script type="text/markdown">
+          A quick example of `koppar-view` is:
+          ```html
+          <koppar-view></koppar-view>
+          ```
+          </script>
+        </template>
+      </koppar-doc-usage>
+    </koppar-element-documentation>
+  </template>
+  <script>
+    Polymer({
+      is: "koppar-view-doc",
+      created: function() {
+        this.removeAttribute("unresolved");
+      }
+    })
+  </script>
+</dom-module>
+
