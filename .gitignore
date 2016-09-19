@@ -1,7 +1,10 @@
 bower_components/
+node_modules/
 ssl/
 
 .DS_Store
 
 access.log
 error.log
+
+build/

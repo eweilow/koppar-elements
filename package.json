@@ -1,0 +1,29 @@
+{
+  "name": "koppar-elements",
+  "version": "1.0.0",
+  "description": "A collection of web components for making quick web apps",
+  "main": "gulpfile.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "gulp && wct --root ./build/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eweilow/koppar-elements.git"
+  },
+  "author": "eweilow",
+  "license": "GPL-2.0",
+  "bugs": {
+    "url": "https://github.com/eweilow/koppar-elements/issues"
+  },
+  "homepage": "https://github.com/eweilow/koppar-elements#readme",
+  "private": true,
+  "devDependencies": {
+    "eslint-plugin-html": "^1.5.2",
+    "gulp": "^3.9.1",
+    "gulp-clean": "^0.3.2",
+    "gulp-eslint": "^3.0.1"
+  }
+}

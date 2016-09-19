@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../bower_components/web-component-tester/browser.js"></script>
+  <link rel="import" href="../bower_components/koppar-elements/sidebar/koppar-sidebar.html">
+</head>
+<body>
+  <koppar-sidebar id="fixture"></koppar-sidebar>
+  <script>
+    suite('<koppar-sidebar>', function() {
+      test('is not fixed', function() {
+        assert.isFalse(document.getElementById('fixture').fixed);
+      });
+    });
+  </script>
+</body>
+</html>
