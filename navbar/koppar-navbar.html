@@ -100,7 +100,7 @@
         }
       },
       _computeColor: function(color) {
-        var parse = tinycolor(color);
+        var parse = window.tinycolor(color);
         if(parse.getLuminance() > 0.5) {
           this.$.pane.classList.add("light");
         } else {
@@ -109,7 +109,7 @@
 
         return parse.toHexString();
       },
-      _changeElevation: function(newValue, oldValue) {
+      _changeElevation: function(newValue) {
         var round = Math.round(newValue);
         if(round !== newValue) return this.elevation = round;
 

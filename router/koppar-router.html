@@ -108,7 +108,7 @@
       observers: [
         "_navigate(__path)"
       ],
-      _navigate: function(path) {
+      _navigate: function() {
         var perfUUID = guid();
         if(window.__performance) window.__performance.mark("routerstart"+perfUUID);
         this.async(function(){
@@ -162,8 +162,8 @@
       animate: function(toView) {
         if(toView === this._currentView) return;
 
-        var toOrder = !!toView ? parseInt(toView.getAttribute("order")) : 0;
-        var fromOrder = !!this._currentView ? parseInt(this._currentView.getAttribute("order")) : 0;
+        var toOrder = toView ? parseInt(toView.getAttribute("order")) : 0;
+        var fromOrder = this._currentView ? parseInt(this._currentView.getAttribute("order")) : 0;
         var outDirection = 
           this._currentView ? 
           (toOrder > fromOrder ? "right" : 

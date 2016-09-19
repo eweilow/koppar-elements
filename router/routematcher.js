@@ -15,10 +15,12 @@ function parse(sections) {
     });
   })
 
+  /*
   var start = "";
   if(sections[0].indexOf("/") === 0) {
     start = "/";
   }
+  */
   return parts;
 }
 

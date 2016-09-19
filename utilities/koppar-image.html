@@ -75,7 +75,7 @@
       },
       _eventListener: null,
       _loadingImage: null,
-      _srcChanged: function(newValue, oldValue) {
+      _srcChanged: function(newValue) {
         if(this._eventListener) {
           if(this._loadingImage) {
             this._loadingImage.removeEventListener("load", this._eventListener);
@@ -87,7 +87,7 @@
         var unloadPromise = Promise.resolve();
         this._eventListener = function() {
           unloadPromise.then(function(){
-            this.$.background.style.backgroundImage = `url(${image.src})`;
+            this.$.background.style.backgroundImage = "url(" + image.src +")";
             this.async(function(){
               this.$.background.classList.add("loaded");
               this.loaded = true;
