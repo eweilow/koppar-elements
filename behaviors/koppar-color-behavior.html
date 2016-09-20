@@ -1,0 +1,147 @@
+<script src="../../tinycolor/dist/tinycolor-min.js"></script>
+
+<script>
+  window.Koppar = window.Koppar || {};
+  window.Koppar.ColorBehavior = {
+    properties: {
+      color: {
+        type: String,
+        value: "#FF5722"
+      },
+      _parsedBackground: {
+        type: String,
+        notify: true,
+        readonly: true
+      },
+      _parsedColor: {
+        type: String,
+        notify: true,
+        readonly: true
+      }
+    },
+    observers: [
+      "_compute(color)"
+    ],
+    _compute: function(inputColor) {
+      if(!window.tinycolor) {
+        this._parsedBackground = inputColor;
+        this._parsedColor = "rgba(0,0,0,0.87)";
+      }
+      var parsedColor = window.tinycolor(inputColor);
+      var light = parsedColor.getLuminance() >= 0.5;
+      var color = "";
+      if(light) {
+        color = tinycolor.mix(inputColor, "#000000", 87);
+      } else {
+        color = tinycolor("#ffffff");
+      }
+      console.log(color.toRgbString());
+      this._changeStyle(parsedColor.toHexString(), color.toRgbString());
+      
+    },
+    _wait: function(time) {
+      return new Promise(function(resolve, reject) {
+        setTimeout(function(){
+          resolve();
+        }, time);
+      });
+    },
+    _nextFrame: function() {
+      return new Promise(function(resolve, reject) {
+        requestAnimationFrame(function(){
+          resolve();
+        });
+      });
+    },
+    _setTransitionsToState: function(element, enabled) {
+      element.classList.add("transition");
+      return this._wait(20);
+    },
+    _waitForTransitions: function(element, type) {
+      if(!element.classList.contains("transition")) return Promise.resolve();
+
+      return new Promise(function(resolve, reject) {
+        var listener = function(evt) {
+          if(evt.propertyName !== type) return;
+
+          element.removeEventListener("transitionend", listener);
+          resolve();
+        };
+
+        element.addEventListener("transitionend", listener);
+      });
+    },
+    /*
+      make sure dummy is faded out
+      add transitions to dummy and content
+      set background on dummy
+      fade in dummy
+      if we are changing colors: fade out content
+      wait for fades
+      set background on pane
+      set color on pane
+      if we are changing colors: fade in content
+      if we are changing colors: wait for fades
+      remove transitions from dummy and content
+    */
+    _changeStyle: function(background, color) {
+      var changingColor = this._parsedColor && this._parsedColor !== color;
+
+      var dummy = this.$.dummy;
+      var content = this.$.content;
+
+      var self = this;
+
+      dummy.style.opacity = "0";
+      Promise.all([
+        self._setTransitionsToState(dummy, true),
+        self._setTransitionsToState(content, true)
+      ]).then(function(){
+        dummy.style.backgroundColor = background;
+        dummy.style.color = color;
+        return self._nextFrame();
+      }).then(function(){
+        dummy.style.opacity = "1";
+
+        var dummyWait = self._waitForTransitions(dummy, "opacity");
+        var colorWait = Promise.resolve();
+
+        if(changingColor) {
+          content.style.opacity = "0";
+          colorWait = self._waitForTransitions(content, "opacity");
+        }
+        return Promise.all([
+          dummyWait,
+          colorWait
+        ]);
+      }).then(function(){
+        self._parsedColor = color;
+        self._parsedBackground = background;
+        return self._nextFrame();
+      }).then(function(){
+        var promise = Promise.resolve();
+        if(changingColor) {
+          content.style.opacity = "1";
+          colorWait = self._waitForTransitions(content, "opacity");
+        }
+        return promise;
+      }).then(function(){
+        return Promise.all([
+          self._setTransitionsToState(dummy, true),
+          self._setTransitionsToState(content, true)
+        ]);
+      }).then(function(){
+        dummy.style.opacity = "0";
+      });
+    },
+    _index: 0,
+    _toggle: function() {
+      var colors = [
+        "#FF5722",
+        "#003322",
+        "#FFFF22"
+      ];
+      this.color = colors[(++this._index) % colors.length];
+    }
+  };
+</script>

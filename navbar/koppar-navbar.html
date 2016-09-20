@@ -1,5 +1,6 @@
 <link rel="import" href="../../polymer/polymer.html">
-<script src="../../tinycolor/dist/tinycolor-min.js"></script>
+<link rel="import" href="../behaviors/koppar-color-behavior.html">
+<link rel="import" href="../behaviors/koppar-navbar-behavior.html">
 
 <dom-module is="koppar-navbar">
   <template>
@@ -11,20 +12,20 @@
       }
       :host .pane {
         display: block;
-        width: 100%;
-
-        box-sizing: border-box;
         color: white;
+        
+        width: 100%;
+      }
+
+      :host #content {
+        width: 100%;
         font-size: 18px;
 
         padding-left: 72px;
-      }
+        box-sizing: border-box;
 
-      :host .pane,
-      :host .pane ::content * {
-        color: white;
+        z-index: 1;
       }
-
       :host .pane span {
         flex: 1;
       }
@@ -57,7 +58,7 @@
         }
       }
       @media(min-width: 601px) {
-        :host .pane {
+        :host #content {
           padding-top: 56px;
           height: 100%;
         }
@@ -71,10 +72,28 @@
         display: flex;
       }
 
+      :host .transition {
+        transition: opacity 200ms;
+      }
+
+      :host #dummy {
+        opacity: 1;
+
+        position: absolute;
+        top: 0; left: 0;
+        right: 0; bottom: 0;
+      }
+
     </style>
-    <div id="pane" class="pane" style$="background: {{__color}}">
-      <span>{{title}}</span>
-      <content></content>
+    <div id="pane" class="pane" style$="color: {{_parsedColor}}; background: {{_parsedBackground}}">
+      <div id="dummy"></div>
+      <div id="content">
+        <span>{{title}}</span>
+        <content></content>
+      </div>
+      <div class="shadow">
+
+      </div>
     </div>
   </template>
   <script>
@@ -83,31 +102,21 @@
       created: function() {
         this.removeAttribute("unresolved");
       },
+      behaviors: [
+        Koppar.ColorBehavior,
+        Koppar.NavbarBehavior
+      ],
       properties: {
         title: String,
         color: {
           type: String,
           value: "#FF5722"
         },
-        __color: {
-          type: String,
-          computed: "_computeColor(color)"
-        },
         elevation: {
           type: Number,
           value: 2,
           observer: "_changeElevation"
         }
-      },
-      _computeColor: function(color) {
-        var parse = window.tinycolor(color);
-        if(parse.getLuminance() > 0.5) {
-          this.$.pane.classList.add("light");
-        } else {
-          this.$.pane.classList.remove("light");
-        }
-
-        return parse.toHexString();
       },
       _changeElevation: function(newValue) {
         var round = Math.round(newValue);
@@ -117,6 +126,22 @@
         if(round > 2) return this.elevation = 2;
 
         this.$.pane.setAttribute("elevation", this.elevation);
+      },
+      prepareChange: function() {
+        var self = this;
+        var content = self.$.content;
+        return self._setTransitionsToState(content, true).then(function(){
+          content.style.opacity = "0";
+          return self._waitForTransitions(content, "opacity");
+        });
+      },
+      completeChange: function() {
+        var self = this;
+        var content = self.$.content;
+        content.style.opacity = "";
+        return self._waitForTransitions(content, "opacity").then(function(){
+          return self._setTransitionsToState(content, false);
+        });
       }
     })
   </script>
