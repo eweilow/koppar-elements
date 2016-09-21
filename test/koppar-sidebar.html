@@ -24,51 +24,89 @@
           sidebar = fixture("koppar-sidebar");
           sidebar.responsiveBreakpoint = 1000;
         });
-        test("Should not be fixed when sidebar.offsetWidth < sidebar.responsiveBreakpoint", function() {
+        test("Should not be fixed and not open when sidebar.offsetWidth < sidebar.responsiveBreakpoint", function() {
           sidebar.style.width = "999px";
 
           var event = new Event("resize");
           window.dispatchEvent(event);
 
-          assert.isFalse(sidebar.fixed, testWidths(sidebar));
+          assert.isFalse(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
         });
-        test("Should not be fixed when sidebar.offsetWidth = sidebar.responsiveBreakpoint", function() {
+        test("Should not be fixed and not open when sidebar.offsetWidth = sidebar.responsiveBreakpoint", function() {
           sidebar.style.width = "1000px";
 
           var event = new Event("resize");
           window.dispatchEvent(event);
 
-          assert.isFalse(sidebar.fixed, testWidths(sidebar));
+          assert.isFalse(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
         });
-        function testWidths(element) {
-          var strings = [];
-          do {
-            if(!(!!element)) break;
-
-            var style = {};
-            if(element.tagName) {
-              style = getComputedStyle(element);
-            }
-            var attributes = [
-              element.offsetWidth,
-              style.position,
-              style.width,
-              style.display
-            ];
-            strings.push(element.tagName + ": " + element.offsetWidth + " (" + attributes.map(function(x) { return x || "undefined"; }).join(", ") + ")");
-          } while((element = element.parentNode));
-
-          return strings.join(", ");
-        }
-        
-
-        test("Should be fixed when sidebar.offsetWidth > sidebar.responsiveBreakpoint", function() {
+        test("Should be fixed and not open when sidebar.offsetWidth > sidebar.responsiveBreakpoint", function() {
           sidebar.style.width = "1001px";
 
           var event = new Event("resize");
           window.dispatchEvent(event);
-          
-          assert.isTrue(sidebar.fixed, testWidths(sidebar));
+
+          assert.isTrue(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
+        });
+
+        test("Should open when not fixed", function() {
+          sidebar.style.width = "999px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          sidebar.open();
+          assert.isFalse(sidebar.fixed);
+          assert.isTrue(sidebar.opened);
+        });
+
+        test("Should not open when fixed", function() {
+          sidebar.style.width = "1001px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          sidebar.open();
+          assert.isTrue(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
+        });
+
+        test("Should close when not fixed and open", function() {
+          sidebar.style.width = "999px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          assert.isFalse(sidebar.opened);
+
+          sidebar.open();
+          assert.isTrue(sidebar.opened);
+          assert.isFalse(sidebar.fixed);
+
+          sidebar.close();
+          assert.isFalse(sidebar.opened);
+        });
+
+        test("Should close when being fixed", function() {
+          sidebar.style.width = "999px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          sidebar.open();
+          assert.isFalse(sidebar.fixed);
+          assert.isTrue(sidebar.opened);
+
+          sidebar.style.width = "1001px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          assert.isTrue(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
         });
       });
       a11ySuite("koppar-sidebar");
