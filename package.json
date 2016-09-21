@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "gulp && wct --root ./build/"
+    "test": "gulp && wct --skip-plugin sauce --root ./build/"
   },
   "repository": {
     "type": "git",

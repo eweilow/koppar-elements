@@ -43,9 +43,9 @@
     },
 
     __onWindowResized__responsive: function() {
-      var windowWidth = window.innerWidth;
+      var width = this.offsetWidth;
 
-      if(windowWidth > this.responsiveBreakpoint) {
+      if(width > this.responsiveBreakpoint) {
         this.fix();
       } else {
         this.unfix();

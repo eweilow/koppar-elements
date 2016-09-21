@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+    <script src="../bower_components/web-component-tester/browser.js"></script>
+    <link rel="import" href="../bower_components/koppar-elements/sidebar/koppar-sidebar.html">
+    <style>
+      test-fixture {
+        position: static;
+      }
+    </style>
+  </head>
+  <body>
+    <test-fixture id="koppar-sidebar">
+      <template>
+        <koppar-sidebar></koppar-sidebar>
+      </template>
+    </test-fixture>
+    <script>
+      suite("<koppar-sidebar>", function() {
+        var sidebar;
+        setup(function() {
+          sidebar = fixture("koppar-sidebar");
+          sidebar.responsiveBreakpoint = 1000;
+        });
+        test("Should not be fixed when sidebar.offsetWidth < sidebar.responsiveBreakpoint", function() {
+          sidebar.style.width = "999px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          assert.isFalse(sidebar.fixed, testWidths(sidebar));
+        });
+        test("Should not be fixed when sidebar.offsetWidth = sidebar.responsiveBreakpoint", function() {
+          sidebar.style.width = "1000px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+
+          assert.isFalse(sidebar.fixed, testWidths(sidebar));
+        });
+        function testWidths(element) {
+          var strings = [];
+          do {
+            if(!(!!element)) break;
+
+            var style = {};
+            if(element.tagName) {
+              style = getComputedStyle(element);
+            }
+            var attributes = [
+              element.offsetWidth,
+              style.position,
+              style.width,
+              style.display
+            ];
+            strings.push(element.tagName + ": " + element.offsetWidth + " (" + attributes.map(function(x) { return x || "undefined"; }).join(", ") + ")");
+          } while((element = element.parentNode));
+
+          return strings.join(", ");
+        }
+        
+
+        test("Should be fixed when sidebar.offsetWidth > sidebar.responsiveBreakpoint", function() {
+          sidebar.style.width = "1001px";
+
+          var event = new Event("resize");
+          window.dispatchEvent(event);
+          
+          assert.isTrue(sidebar.fixed, testWidths(sidebar));
+        });
+      });
+      a11ySuite("koppar-sidebar");
+    </script>
+
+  </body>
+</html>
