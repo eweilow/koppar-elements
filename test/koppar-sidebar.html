@@ -187,12 +187,23 @@
 
         });
 
-        test("Should only move when angle <= 30 degrees and distance > 25 pixels", function(cb) {
-          sidebar.style.width = "500px";
+        var pairs = [
+          { distance: 15, angle: 0, expected: false },
+          { distance: 24, angle: 0, expected: false },
+          { distance: 25, angle: 0, expected: true },
+          { distance: 35, angle: 15, expected: true },
+          { distance: 75, angle: 25, expected: true },
+          { distance: 75, angle: 29, expected: true },
+          { distance: 75, angle: 31, expected: false },
+          { distance: 75, angle: 45, expected: false },
+          { distance: 30, angle: -15, expected: true },
+          { distance: 75, angle: -25, expected: true },
+          { distance: 75, angle: -29, expected: true },
+          { distance: 75, angle: -31, expected: false },
+          { distance: 75, angle: -45, expected: false }
+        ];
 
-          sidebar.close();
-          assert.isFalse(sidebar.opened);
-
+        pairs.forEach(function(pair){
           function run(startX, startY, distance, angle, callback) {
             var radianAngle = angle * (Math.PI / 180);
             var endX = (startX + Math.cos(radianAngle) * distance);
@@ -201,6 +212,42 @@
               callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle);
             });
           }
+          
+          var str = "Should " + (pair.expected ? "": "not") + " open when angle = " + pair.angle + " and distance = " + pair.distance;
+          test(str, function(done){
+            sidebar.style.width = "500px";
+
+            sidebar.close();
+            assert.isFalse(sidebar.opened, "Should be closed when starting");
+
+            run(100, 200, pair.distance, pair.angle, function(str){
+              if(pair.expected) {
+                assert.isTrue(sidebar.opened, str);
+              } else {
+                assert.isFalse(sidebar.opened, str);
+              }
+              done();
+            });
+          });
+          var str = "Should " + (pair.expected ? "": "not") + " close when angle = " + pair.angle + " and distance = " + pair.distance;
+          test(str, function(done){
+            sidebar.style.width = "500px";
+
+            sidebar.open();
+            assert.isTrue(sidebar.opened, "Should be open when starting");
+
+            run(400, 200, -pair.distance, pair.angle, function(str){
+              if(pair.expected) {
+                assert.isFalse(sidebar.opened, str);
+              } else {
+                assert.isTrue(sidebar.opened, str);
+              }
+              done();
+            });
+          });
+        }.bind(this));
+/*
+        test("Should only move when angle <= 30 degrees and distance > 25 pixels", function(cb) {
 
           run(100, 200, 15, 0, function(str){
             assert.isFalse(sidebar.opened, str);
@@ -220,7 +267,7 @@
               });
             });
           });
-        });
+        });*/
       });
       a11ySuite("koppar-sidebar");
     </script>
