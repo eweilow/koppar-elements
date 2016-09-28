@@ -190,16 +190,14 @@
         var pairs = [
           { distance: 15, angle: 0, expected: false },
           { distance: 24, angle: 0, expected: false },
-          { distance: 25, angle: 0, expected: true },
+          { distance: 30, angle: 0, expected: true },
           { distance: 35, angle: 15, expected: true },
           { distance: 75, angle: 25, expected: true },
-          { distance: 75, angle: 29, expected: true },
-          { distance: 75, angle: 31, expected: false },
+          { distance: 75, angle: 35, expected: false },
           { distance: 75, angle: 45, expected: false },
           { distance: 35, angle: -15, expected: true },
           { distance: 75, angle: -25, expected: true },
-          { distance: 75, angle: -29, expected: true },
-          { distance: 75, angle: -31, expected: false },
+          { distance: 75, angle: -35, expected: false },
           { distance: 75, angle: -45, expected: false }
         ];
 
