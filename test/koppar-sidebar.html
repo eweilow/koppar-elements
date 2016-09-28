@@ -222,7 +222,7 @@
 
             run(100, 200, pair.distance, pair.angle, function(str){
               if(pair.expected) {
-                assert.isFalse(sidebar.opened, str);
+                assert.isTrue(sidebar.opened, str);
               } else {
                 assert.isFalse(sidebar.opened, str);
               }
