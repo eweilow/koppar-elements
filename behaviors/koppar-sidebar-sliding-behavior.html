@@ -182,6 +182,8 @@
       }
     },
 
+    _debugSteps: [],
+
     _shouldStartSliding: function(evt) {
       var baseObject = window.emulatingTouches ? evt.detail : evt;
 
@@ -192,14 +194,20 @@
       var deltaX = baseObject.changedTouches.item(0).clientX - this._startTouchX;
       var deltaY = baseObject.changedTouches.item(0).clientY - this._startTouchY;
 
-
       var angle = Math.round(Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX))) / (Math.PI / 180));
       deltaX = Math.round(deltaX);
       deltaY = Math.round(deltaY);
       var squareLength = deltaX * deltaX + deltaY * deltaY;
       var length = Math.round(Math.sqrt(squareLength));
-      console.log(deltaX, deltaY, angle, length);
-      if(length > 2 && angle > maximumAngle) {
+
+      this._debugSteps.push({
+        deltaX: deltaX,
+        deltaY: deltaY,
+        length: length,
+        angle: angle
+      });
+
+      if(length > 5 && angle > maximumAngle) {
         this._prepareSlide = false;
         return false;
       }
@@ -230,6 +238,8 @@
       this._startTouchX = baseObject.touches[0].clientX;
       this._startTouchY = baseObject.touches[0].clientY;
       this._startTimestamp = Date.now();
+
+      this._debugSteps = [];
     },
 
     __onTouchEnd: function() {

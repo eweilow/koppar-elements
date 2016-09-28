@@ -207,12 +207,14 @@
             var endX = (startX + Math.cos(radianAngle) * distance);
             var endY = (startY + Math.sin(radianAngle) * distance);
             drag({x: startX, y: startY}, {x: endX, y: endY}, 10, function(){
-              callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle);
+              callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle + "\n" + sidebar._debugSteps.map(function(x){
+                return [x.deltaX.toString(), x.deltaY.toString(), x.angle.toString(), x.length.toString()].join(", ");
+              }).join("\n"));
             });
           }
           
           var str = "Should " + (pair.expected ? "": "not") + " open when angle = " + pair.angle + " and distance = " + pair.distance;
-          test(str, function(done){
+          test(str, function(cb){
             sidebar.style.width = "500px";
 
             sidebar.close();
@@ -220,15 +222,15 @@
 
             run(100, 200, pair.distance, pair.angle, function(str){
               if(pair.expected) {
-                assert.isTrue(sidebar.opened, str);
+                assert.isFalse(sidebar.opened, str);
               } else {
                 assert.isFalse(sidebar.opened, str);
               }
-              done();
+              cb();
             });
           });
           var str = "Should " + (pair.expected ? "": "not") + " close when angle = " + pair.angle + " and distance = " + pair.distance;
-          test(str, function(done){
+          test(str, function(cb){
             sidebar.style.width = "500px";
 
             sidebar.open();
@@ -240,7 +242,7 @@
               } else {
                 assert.isTrue(sidebar.opened, str);
               }
-              done();
+              cb();
             });
           });
         }.bind(this));
