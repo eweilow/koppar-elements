@@ -185,22 +185,27 @@
     _shouldStartSliding: function(evt) {
       var baseObject = window.emulatingTouches ? evt.detail : evt;
 
-      var maximumAngle = Math.PI / 6; //180 / 8 = >15 degrees
+      var maximumAngle = 30; //180 / 8 = >15 degrees
       var minLength = 25;
       var maxTimeSinceStart = 200;
       var squareMinLength = minLength * minLength;
       var deltaX = baseObject.changedTouches.item(0).clientX - this._startTouchX;
       var deltaY = baseObject.changedTouches.item(0).clientY - this._startTouchY;
 
-      var angle = Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX)));
+
+      var angle = Math.round(Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX))) / (Math.PI / 180));
+      deltaX = Math.round(deltaX);
+      deltaY = Math.round(deltaY);
       var squareLength = deltaX * deltaX + deltaY * deltaY;
-      if(squareLength > 5 && angle > maximumAngle) {
+      var length = Math.round(Math.sqrt(squareLength));
+      console.log(deltaX, deltaY, angle, length);
+      if(length > 2 && angle > maximumAngle) {
         this._prepareSlide = false;
         return false;
       }
       if(this.opened && deltaX > 0) return false;
       if(!this.opened && deltaX < 0) return false;
-      if(squareLength < squareMinLength) return false;
+      if(length < minLength) return false;
       if(Date.now() - this._startTimestamp > maxTimeSinceStart) return false;
       return true;
     },
@@ -251,7 +256,7 @@
       if(this.fixed) return;
       
       var baseObject = window.emulatingTouches ? evt.detail : evt;
-      if(baseObject.changedTouches.length > 1) return; //Cancel if we are touching more than once
+      if(!baseObject.changedTouches || baseObject.changedTouches.length > 1) return; //Cancel if we are touching more than once
       if(!this.sliding && !this._prepareSlide) return;
 
       if(!this.sliding) {
