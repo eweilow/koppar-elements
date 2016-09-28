@@ -190,7 +190,6 @@
       var maximumAngle = 30; //180 / 8 = >15 degrees
       var minLength = 25;
       var maxTimeSinceStart = 200;
-      var squareMinLength = minLength * minLength;
       var deltaX = baseObject.changedTouches.item(0).clientX - this._startTouchX;
       var deltaY = baseObject.changedTouches.item(0).clientY - this._startTouchY;
       var deltaTime = Date.now() - this._startTimestamp;
@@ -240,7 +239,7 @@
       this._startTouchY = baseObject.touches[0].clientY;
       this._startTimestamp = Date.now();
 
-      this._debugSteps = [];
+      this._debugSteps = [];
     },
 
     __onTouchEnd: function() {
