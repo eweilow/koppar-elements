@@ -183,14 +183,15 @@
     },
 
     _shouldStartSliding: function(evt) {
+      var baseObject = window.emulatingTouches ? evt.detail : evt;
+
       var maximumAngle = Math.PI / 6; //180 / 8 = >15 degrees
       var minLength = 25;
       var maxTimeSinceStart = 200;
       var squareMinLength = minLength * minLength;
-      var deltaX = evt.changedTouches.item(0).clientX - this._startTouchX;
-      var deltaY = evt.changedTouches.item(0).clientY - this._startTouchY;
+      var deltaX = baseObject.changedTouches.item(0).clientX - this._startTouchX;
+      var deltaY = baseObject.changedTouches.item(0).clientY - this._startTouchY;
 
-      
       var angle = Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX)));
       var squareLength = deltaX * deltaX + deltaY * deltaY;
       if(squareLength > 5 && angle > maximumAngle) {
@@ -219,9 +220,10 @@
     __onTouchStart: function(evt) {
       if(this.fixed) return;
 
+      var baseObject = window.emulatingTouches ? evt.detail : evt;
       this._prepareSlide = true;
-      this._startTouchX = evt.touches[0].clientX;
-      this._startTouchY = evt.touches[0].clientY;
+      this._startTouchX = baseObject.touches[0].clientX;
+      this._startTouchY = baseObject.touches[0].clientY;
       this._startTimestamp = Date.now();
     },
 
@@ -248,7 +250,8 @@
     __onTouchMove: function(evt) {
       if(this.fixed) return;
       
-      if(evt.changedTouches.length > 1) return; //Cancel if we are touching more than once
+      var baseObject = window.emulatingTouches ? evt.detail : evt;
+      if(baseObject.changedTouches.length > 1) return; //Cancel if we are touching more than once
       if(!this.sliding && !this._prepareSlide) return;
 
       if(!this.sliding) {
@@ -263,7 +266,7 @@
         requestAnimationFrame(this._boundRender);
       }
       evt.preventDefault();
-      this._slideTargetPosition = evt.changedTouches.item(0).clientX + this._slideOffset;
+      this._slideTargetPosition = baseObject.changedTouches.item(0).clientX + this._slideOffset;
     }
   };
 </script>

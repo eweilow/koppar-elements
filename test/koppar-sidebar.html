@@ -18,6 +18,70 @@
       </template>
     </test-fixture>
     <script>
+      function drag(fromPos, toPos, frames, callback) {
+        window.emulatingTouches = true;
+
+        var delta = { x: toPos.x - fromPos.x, y: toPos.y - fromPos.y };
+        var velocity = { x: (delta.x / frames), y: (delta.y / frames) };
+
+        // Create the event
+        var startEvent = new CustomEvent("touchstart", {
+          detail: {
+            touches: [
+              {
+                clientX: fromPos.x,
+                clientY: fromPos.y
+              }
+            ]
+          }
+        });
+        // Dispatch/Trigger/Fire the event
+        window.dispatchEvent(startEvent);
+
+        var frameCount = 1;
+        function frame() {
+          if(frameCount-1 >= frames) {
+            clearInterval(interval);
+            window.emulatingTouches = false;
+            // Create the event
+            var endEvent = new CustomEvent("touchend", {
+              detail: {
+                touches: [
+                  {
+                    clientX: fromPos.x,
+                    clientY: fromPos.y
+                  }
+                ]
+              }
+            });
+            // Dispatch/Trigger/Fire the event
+            window.dispatchEvent(endEvent);
+
+            if(callback) setTimeout(callback, 100);
+            return false;
+          }
+          var detail = {
+            changedTouches: {
+              length: 1,
+              item: function() {
+                return {
+                  clientX: fromPos.x + velocity.x * frameCount,
+                  clientY: fromPos.y + velocity.y * frameCount
+                }
+              }
+            }
+          };
+          // Create the event
+          var event = new CustomEvent("touchmove", { detail: detail });
+          event.detail = detail;
+          // Dispatch/Trigger/Fire the event
+          window.dispatchEvent(event);
+
+          frameCount++;
+        }
+        
+        var interval = setInterval(frame, 1000 / 60);
+      };
       suite("<koppar-sidebar>", function() {
         var sidebar;
         setup(function() {
@@ -107,6 +171,55 @@
 
           assert.isTrue(sidebar.fixed);
           assert.isFalse(sidebar.opened);
+        });
+
+        test("Should be draggable", function(callback) {
+          sidebar.style.width = "500px";
+
+          sidebar.close();
+          assert.isFalse(sidebar.fixed);
+          assert.isFalse(sidebar.opened);
+
+          drag({x: 100, y: 200}, {x: 400, y: 200}, 10, function(){
+            assert.isTrue(sidebar.opened);
+            callback();
+          });
+
+        });
+
+        test("Should only move when angle <= 30 degrees and distance > 25 pixels", function(cb) {
+          sidebar.style.width = "500px";
+
+          sidebar.close();
+          assert.isFalse(sidebar.opened);
+
+          function run(startX, startY, distance, angle, callback) {
+            var radianAngle = angle * (Math.PI / 180);
+            var endX = (startX + Math.cos(radianAngle) * distance);
+            var endY = (startY + Math.sin(radianAngle) * distance);
+            drag({x: startX, y: startY}, {x: endX, y: endY}, 10, function(){
+              callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle);
+            });
+          }
+
+          run(100, 200, 15, 0, function(str){
+            assert.isFalse(sidebar.opened, str);
+            run(100, 200, 26, 0, function(str){
+              assert.isTrue(sidebar.opened, str);
+              sidebar.close();
+              run(100, 200, 50, 5, function(str){
+                assert.isTrue(sidebar.opened, str);
+                sidebar.close();
+                run(100, 200, 50, 31, function(str){
+                  assert.isFalse(sidebar.opened, str);
+                  run(100, 200, 50, 29, function(str){
+                    assert.isTrue(sidebar.opened, str);
+                    cb();
+                  });
+                });
+              });
+            });
+          });
         });
       });
       a11ySuite("koppar-sidebar");
