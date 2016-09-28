@@ -208,7 +208,7 @@
             var endY = (startY + Math.sin(radianAngle) * distance);
             drag({x: startX, y: startY}, {x: endX, y: endY}, 10, function(){
               callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle + "\n" + sidebar._debugSteps.map(function(x){
-                return [x.deltaX.toString(), x.deltaY.toString(), x.angle.toString(), x.length.toString()].join(", ");
+                return [x.deltaX.toString(), x.deltaY.toString(), x.angle.toString(), x.length.toString(), x.deltaTime.toString()].join(", ");
               }).join("\n"));
             });
           }

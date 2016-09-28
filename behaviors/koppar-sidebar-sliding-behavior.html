@@ -193,7 +193,7 @@
       var squareMinLength = minLength * minLength;
       var deltaX = baseObject.changedTouches.item(0).clientX - this._startTouchX;
       var deltaY = baseObject.changedTouches.item(0).clientY - this._startTouchY;
-
+      var deltaTime = Date.now() - this._startTimestamp;
       var angle = Math.round(Math.abs(Math.atan(Math.abs(deltaY) / Math.abs(deltaX))) / (Math.PI / 180));
       deltaX = Math.round(deltaX);
       deltaY = Math.round(deltaY);
@@ -204,7 +204,8 @@
         deltaX: deltaX,
         deltaY: deltaY,
         length: length,
-        angle: angle
+        angle: angle,
+        deltaTime: deltaTime
       });
 
       if(length > 5 && angle > maximumAngle) {
@@ -214,7 +215,7 @@
       if(this.opened && deltaX > 0) return false;
       if(!this.opened && deltaX < 0) return false;
       if(length < minLength) return false;
-      if(Date.now() - this._startTimestamp > maxTimeSinceStart) return false;
+      if(deltaTime > maxTimeSinceStart) return false;
       return true;
     },
     
