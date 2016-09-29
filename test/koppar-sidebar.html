@@ -208,7 +208,10 @@
             var endY = (startY + Math.sin(radianAngle) * distance);
             drag({x: startX, y: startY}, {x: endX, y: endY}, 10, function(){
               callback("moving from " + startX + ", "+ startY + " to " + endX + ", " + endY + ", " + radianAngle + "\n" + sidebar._debugSteps.map(function(x){
-                return [x.type||"", (x.deltaX||"n/a").toString(), (x.deltaY||"n/a").toString(), (x.angle||"n/a").toString(), (x.length||"n/a").toString(), (x.deltaTime||"n/a").toString()].join(", ");
+                function v(name) {
+                  return x.hasOwnProperty(name) ? (x[name] || "n/a") : "n/a";
+                }
+                return ["type", "deltaX", "deltaY", "angle", "length", "deltaTime"].map(function(y) { return v(y); }).join(", ");
               }).join("\n"));
             });
           }
@@ -227,7 +230,7 @@
                 assert.isFalse(sidebar.opened, str);
               }
               cb();
-            });
+            }.bind(this));
           });
           var str = "Should " + (pair.expected ? "": "not") + " close when angle = " + pair.angle + " and distance = " + pair.distance;
           test(str, function(cb){
@@ -243,7 +246,7 @@
                 assert.isTrue(sidebar.opened, str);
               }
               cb();
-            });
+            }.bind(this));
           });
         }.bind(this));
 /*
