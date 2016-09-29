@@ -24,22 +24,23 @@
         var delta = { x: toPos.x - fromPos.x, y: toPos.y - fromPos.y };
         var velocity = { x: (delta.x / frames), y: (delta.y / frames) };
 
-        // Create the event
-        var startEvent = new CustomEvent("touchstart", {
-          detail: {
-            touches: [
-              {
-                clientX: fromPos.x,
-                clientY: fromPos.y
-              }
-            ]
-          }
-        });
-        // Dispatch/Trigger/Fire the event
-        window.dispatchEvent(startEvent);
-
-        var frameCount = 1;
+        var frameCount = 0;
         function frame() {
+          if(frameCount === 0) {
+            // Create the event
+            var startEvent = new CustomEvent("touchstart", {
+              detail: {
+                touches: [
+                  {
+                    clientX: fromPos.x,
+                    clientY: fromPos.y
+                  }
+                ]
+              }
+            });
+            // Dispatch/Trigger/Fire the event
+            window.dispatchEvent(startEvent);
+          }
           if(frameCount-1 >= frames) {
             clearInterval(interval);
             window.emulatingTouches = false;
