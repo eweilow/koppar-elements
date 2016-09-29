@@ -209,12 +209,24 @@
 
       if(length > 5 && angle > maximumAngle) {
         this._prepareSlide = false;
+        this._debugSteps.push({ type: "length too small, angle too large" });
         return false;
       }
-      if(this.opened && deltaX > 0) return false;
-      if(!this.opened && deltaX < 0) return false;
-      if(length < minLength) return false;
-      if(deltaTime > maxTimeSinceStart) return false;
+      if(this.opened && deltaX > 0) {
+        return false;
+      }
+      if(!this.opened && deltaX < 0) {
+        return false;
+      }
+      if(length < minLength) {
+        return false;
+      }
+      if(deltaTime > maxTimeSinceStart) {
+        this._prepareSlide = false;
+        this._debugSteps.push({ type: "timed out" });
+        return false;
+      }
+      this._debugSteps.push({ type: "start slide" });
       return true;
     },
     
@@ -240,6 +252,15 @@
       this._startTimestamp = Date.now();
 
       this._debugSteps = [];
+
+      this._debugSteps.push({
+        type: "start", 
+        deltaX: this._startTouchX,
+        deltaY: this._startTouchY,
+        length: 0,
+        angle: 0,
+        deltaTime: 0
+      });
     },
 
     __onTouchEnd: function() {
